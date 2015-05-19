@@ -21,6 +21,10 @@ class Floor
     end
   end
 
+  def is_solid? (x, y)
+    return @map[x][y]
+  end
+
   # BELOW FUNCTIONS FOR TESTING ONLY
 
   def self.make_test_floor

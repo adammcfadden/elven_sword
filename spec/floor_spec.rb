@@ -22,4 +22,13 @@ describe(Floor) do
     end
   end
 
+  describe('#is_solid?') do
+    it("Returns true if the map is solid (i.e., contains a wall) at the specified coordinates.") do
+      test_floor = Floor.new({:width => 10, :height => 10})
+      test_floor.create_boundaries()
+      expect(test_floor.is_solid?(0, 0)).to(eq(true))
+      expect(test_floor.is_solid?(4, 4)).to(eq(false))
+    end
+  end
+
 end
