@@ -22,6 +22,17 @@ describe(Floor) do
     end
   end
 
+  describe('test rectangular maps') do
+    it("tests to make sure you can create rectangular maps") do
+      test_floor = Floor.new({:width => 30, :height => 5})
+      test_floor.create_boundaries()
+
+      print("\n\nRectangular Map:\n\n")
+      test_floor.print_map()
+      print("\n")
+    end
+  end
+
   describe('#fill_map') do
     it("Fills the whole map as either solid or empty space.") do
       test_floor = Floor.new({:width => 10, :height => 10})
@@ -34,7 +45,7 @@ describe(Floor) do
 
   describe('#drunk_walk') do
     it("Performs the drunkard's walk generation algorithim, clearing or filling for a given number of steps.") do
-      test_floor = Floor.new({:width => 20, :height => 20})
+      test_floor = Floor.new({:width => 80, :height => 20})
       test_floor.fill_map(true)
       steps = 100
       test_floor.drunk_walk(steps, false)

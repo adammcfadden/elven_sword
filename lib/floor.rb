@@ -5,23 +5,23 @@ class Floor
   def initialize (attributes)
     @width = attributes[:width]
     @height = attributes[:height]
-    @map = Array.new(@height)
-    @map.each_index() do |row_index|
-      @map[row_index] = Array.new(@width, false)
+    @map = Array.new(@width)
+    @map.each_index() do |index|
+      @map[index] = Array.new(@height, false)
     end
   end
 
   def fill_map (with_solid)
-    @map.each_index() do |y|
-      @map[y].each_index() do |x|
+    @map.each_index() do |x|
+      @map[x].each_index() do |y|
         set_is_solid(x, y, with_solid)
       end
     end
   end
 
   def create_boundaries
-    @map.each_index() do |y|
-      @map[y].each_index() do |x|
+    @map.each_index() do |x|
+      @map[x].each_index() do |y|
         if(x == 0 || y == 0 || x == @width-1 || y == @height-1)
           set_is_solid(x, y, true)
         end
@@ -119,12 +119,12 @@ class Floor
   end
 
   def print_map
-    @map.each_index() do |y|
-      @map[y].each_index() do |x|
-        if(@map[x][y])
-          print('#')
+    (@height).times do |y|
+      (@width).times do |x|
+        if(is_solid?(x, y))
+          print("#")
         else
-          print('.')
+          print(".")
         end
       end
       print("\n")
