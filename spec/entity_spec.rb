@@ -4,7 +4,7 @@ describe Entity do
 
   describe '.create' do
     it 'creates a starting player with a name, health, level, and starting location of 1,1' do
-      player = Entity.create(name: 'Dirge', level: 1, health: 100, location_x: 1, location_y: 1, pc?: true, alive?: true)
+      player = Entity.create(name: 'Dirge', level: 1, xp: 0, health: 100,  location_x: 1, location_y: 1, pc?: true, alive?: true)
     expect(player.name).to eq('Dirge')
     end
   end
@@ -29,6 +29,31 @@ describe Entity do
       player = Entity.create(name: 'Dirge', level: 1, health: 100, location_x: 1, location_y: 1, pc?: true, alive?: true)
       player.move_east
       expect(player.location_x).to eq(2)
+    end
+  end
+
+  describe '#take_damage' do
+    it 'takes damage from an entity and subtracts the damage from remaning health' do
+      player = Entity.create(name: 'Dirge', level: 1, health: 100, location_x: 1, location_y: 1, pc?: true, alive?: true)
+      monster = Entity.create(name: 'Lina', level: 1, health: 100, location_x: 1, location_y: 1, pc?: true, alive?: true)
+      player.take_damage(monster.damage)
+      expect(player.health).to eq(95)
+    end
+
+    it 'checks if the entity is dead' do
+      player = Entity.create(name: 'Dirge', level: 1, health: 100, location_x: 1, location_y: 1, pc?: true, alive?: true)
+      monster = Entity.create(name: 'Lina', level: 1, health: 5, location_x: 1, location_y: 1, pc?: true, alive?: true)
+      monster.take_damage(player.damage)
+      expect(monster.alive?).to eq(false)
+    end
+  end
+
+  describe '#win_battle' do
+    it 'gives the winning entity xp' do
+      player = Entity.create(name: 'Dirge', level: 1, xp: 0, health: 100, location_x: 1, location_y: 1, pc?: true, alive?: true)
+      monster = Entity.create(name: 'Lina', level: 1, xp: 0, health: 100, location_x: 1, location_y: 1, pc?: true, alive?: true)
+      player.win_battle(100 * monster.level)
+      expect(player.xp).to eq(100)
     end
   end
 end
