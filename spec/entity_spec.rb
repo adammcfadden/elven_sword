@@ -58,7 +58,7 @@ describe Entity do
   end
 
   describe '#level_up' do
-    it 'increases the level and stats of the entity' do
+    it 'increases the level of the entity' do
       player = Entity.create(name: 'Dirge', level: 1, xp: 0, health: 100, location_x: 1, location_y: 1, pc?: true, alive?: true)
       player.level_up
       expect(player.level).to eq(2)

@@ -1,4 +1,5 @@
 class Entity < ActiveRecord::Base
+  belongs_to(:battle)
 
   def attack
     return 5
@@ -46,5 +47,4 @@ class Entity < ActiveRecord::Base
     level += 1
     self.update(level: level, xp: 0)
   end
-
 end
