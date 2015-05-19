@@ -1,9 +1,10 @@
 class Player
+  attr_accessor :x, :y
   def initialize(window)
     @image = Gosu::Image.new(window, "media/fox.png", false)
     @width = 16
-    @x = GameWindow::WIDTH/2
-    @y = GameWindow::HEIGHT/2
+    @x = 10
+    @y = 10
   end
 
   def warp(x, y)
@@ -12,31 +13,22 @@ class Player
   end
 
   def walk_left
-    unless @x == GameWindow::WIDTH - GameWindow::WIDTH + @width
-      @x -= 16
-    end
+      @x -= 1
   end
 
   def walk_right
-    unless @x == GameWindow::WIDTH - (2 * @width)
-      @x += 16
-    end
+      @x += 1
   end
 
   def walk_up
-    unless @y == GameWindow::HEIGHT - GameWindow::HEIGHT + @width
-      @y -= 16
-    end
+      @y -= 1
   end
 
   def walk_down
-    unless @y == GameWindow::HEIGHT - (2 * @width)
-      @y += 16
-    end
+      @y += 1
   end
 
-
   def draw
-    @image.draw(@x, @y, 1)
+    @image.draw(@x*16, @y*16, 1)
   end
 end

@@ -4,6 +4,8 @@ require './lib/player'
 
 WIDTH = 1280
 HEIGHT = 1280
+BOARD_WIDTH = 80
+BOARD_HEIGHT = 80
 
 class GameWindow < Gosu::Window
   def initialize
@@ -11,7 +13,10 @@ class GameWindow < Gosu::Window
     self.caption = "Render Map" #window title
     @floor_image = Gosu::Image.new(self, "./media/floor.png", false) # image tile 1
     @wall_image = Gosu::Image.new(self, "./media/wall.gif", false) # image tile 2
-    @floor = Floor.new({:width => 80, :height => 80}) # call toby's mapmaker
+    @floor = Floor.new({:width => BOARD_WIDTH, :height => BOARD_HEIGHT}) # call toby's mapmaker
+    @floor.fill_map(true)
+    steps = 1000
+    @floor.drunk_walk(steps ,false)
     @floor.create_boundaries
     @scaler = 16 #scales the size of the image tiles to account for image size
     @player = Player.new(self)
@@ -32,20 +37,26 @@ class GameWindow < Gosu::Window
 
   def update
     if button_down? Gosu::KbLeft then
-      @player.walk_left
+      unless @floor.is_solid?((@player.x - 1), @player.y)
+        @player.walk_left
+      end
     end
     if button_down? Gosu::KbRight then
-      @player.walk_right
+      unless @floor.is_solid?((@player.x + 1), @player.y)
+        @player.walk_right
+      end
     end
     if button_down? Gosu::KbUp then
-      @player.walk_up
+      unless @floor.is_solid?(@player.x, @player.y - 1)
+        @player.walk_up
+      end
     end
     if button_down? Gosu::KbDown then
-      @player.walk_down
+      unless @floor.is_solid?(@player.x, @player.y + 1)
+        @player.walk_down
+      end
     end
   end
-
-
 end
 
 window = GameWindow.new
