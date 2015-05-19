@@ -2,23 +2,23 @@ require 'gosu'
 require './lib/floor'
 require './lib/player'
 
-WIDTH = 1280
-HEIGHT = 1280
 BOARD_WIDTH = 80
 BOARD_HEIGHT = 80
+TICKS_PER_STEP = 5
 
 class GameWindow < Gosu::Window
   def initialize
-    super(WIDTH, HEIGHT, false) #map size
+    super(1280, 1280, false) #map size
     self.caption = "Render Map" #window title
     @floor_image = Gosu::Image.new(self, "./media/floor.png", false) # image tile 1
     @wall_image = Gosu::Image.new(self, "./media/wall.gif", false) # image tile 2
     @floor = Floor.new({:width => BOARD_WIDTH, :height => BOARD_HEIGHT}) # call toby's mapmaker
     @floor.fill_map(true)
-    steps = 1000
+    steps = 30000
     @floor.drunk_walk(steps ,false)
     @floor.create_boundaries
     @scaler = 16 #scales the size of the image tiles to account for image size
+    @countdown = 0
     @player = Player.new(self)
   end
 
@@ -36,24 +36,39 @@ class GameWindow < Gosu::Window
   end
 
   def update
+    if @countdown > 0 then
+      @countdown -= 1
+    end
     if button_down? Gosu::KbLeft then
       unless @floor.is_solid?((@player.x - 1), @player.y)
-        @player.walk_left
+        if @countdown == 0
+          @countdown = TICKS_PER_STEP
+          @player.walk_left
+        end
       end
     end
     if button_down? Gosu::KbRight then
       unless @floor.is_solid?((@player.x + 1), @player.y)
-        @player.walk_right
+        if @countdown == 0
+          @countdown = TICKS_PER_STEP
+          @player.walk_right
+        end
       end
     end
     if button_down? Gosu::KbUp then
       unless @floor.is_solid?(@player.x, @player.y - 1)
-        @player.walk_up
+        if @countdown == 0
+          @countdown = TICKS_PER_STEP
+          @player.walk_up
+        end
       end
     end
     if button_down? Gosu::KbDown then
       unless @floor.is_solid?(@player.x, @player.y + 1)
-        @player.walk_down
+        if @countdown == 0
+          @countdown = TICKS_PER_STEP
+          @player.walk_down
+        end
       end
     end
   end
