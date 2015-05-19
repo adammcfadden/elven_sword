@@ -1,5 +1,6 @@
 source('https://rubygems.org')
 
+gem 'gosu'
 gem 'capybara'
 gem 'pg'
 gem 'rspec'
