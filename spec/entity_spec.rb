@@ -9,10 +9,10 @@ describe Entity do
     end
   end
 
-  describe '#damage' do
+  describe '#attack' do
     it 'returns a damage roll for the entity' do
       player = Entity.create(name: 'Dirge', level: 1, health: 100, location_x: 1, location_y: 1, pc?: true, alive?: true)
-      expect(player.damage).to eq(5)
+      expect(player.attack).to eq(5)
     end
   end
 
@@ -35,15 +35,15 @@ describe Entity do
   describe '#take_damage' do
     it 'takes damage from an entity and subtracts the damage from remaning health' do
       player = Entity.create(name: 'Dirge', level: 1, health: 100, location_x: 1, location_y: 1, pc?: true, alive?: true)
-      monster = Entity.create(name: 'Lina', level: 1, health: 100, location_x: 1, location_y: 1, pc?: true, alive?: true)
-      player.take_damage(monster.damage)
+      monster = Entity.create(name: 'Lina', level: 1, health: 100, location_x: 1, location_y: 1, pc?: false, alive?: true)
+      player.take_damage(monster.attack)
       expect(player.health).to eq(95)
     end
 
     it 'checks if the entity is dead' do
       player = Entity.create(name: 'Dirge', level: 1, health: 100, location_x: 1, location_y: 1, pc?: true, alive?: true)
-      monster = Entity.create(name: 'Lina', level: 1, health: 5, location_x: 1, location_y: 1, pc?: true, alive?: true)
-      monster.take_damage(player.damage)
+      monster = Entity.create(name: 'Lina', level: 1, health: 5, location_x: 1, location_y: 1, pc?: false, alive?: true)
+      monster.take_damage(player.attack)
       expect(monster.alive?).to eq(false)
     end
   end
@@ -51,9 +51,19 @@ describe Entity do
   describe '#win_battle' do
     it 'gives the winning entity xp' do
       player = Entity.create(name: 'Dirge', level: 1, xp: 0, health: 100, location_x: 1, location_y: 1, pc?: true, alive?: true)
-      monster = Entity.create(name: 'Lina', level: 1, xp: 0, health: 100, location_x: 1, location_y: 1, pc?: true, alive?: true)
+      monster = Entity.create(name: 'Lina', level: 1, xp: 0, health: 100, location_x: 1, location_y: 1, pc?: false, alive?: true)
       player.win_battle(100 * monster.level)
       expect(player.xp).to eq(100)
     end
   end
+
+  describe '#level_up' do
+    it 'increases the level of the entity' do
+      player = Entity.create(name: 'Dirge', level: 1, xp: 0, health: 100, location_x: 1, location_y: 1, pc?: true, alive?: true)
+      player.level_up
+      expect(player.level).to eq(2)
+      expect(player.xp).to eq(0)
+    end
+  end
+
 end
