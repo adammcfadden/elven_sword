@@ -1,0 +1,8 @@
+development:
+  adapter: postgresql
+  database: game_development
+  template: template0
+test:
+  adapter: postgresql
+  database: game_test
+  template: template0
