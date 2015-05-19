@@ -47,13 +47,27 @@ class Floor
 
   # The cellular automata algorithim: http://www.roguebasin.com/index.php?title=Cellular_Automata_Method_for_Generating_Random_Cave-Like_Levels
 
-  def create_caverns
+  def cellular_automata(iterations)
     randomize_map()
-    iterate_automata()
-    iterate_automata()
-    drunk_walk(500, false)
-    iterate_automata()
+    # fill_map(true)
+    iterations.times() do
+      iterate_automata()
+    end
     create_boundaries()
+  end
+
+  def iterate_automata
+    temp_floor = self
+    (@height).times do |y|
+      (@width).times do |x|
+        if(empty_neighbors(x, y, 1) >= 5)
+          temp_floor.set_is_solid(x, y, false)
+        else
+          temp_floor.set_is_solid(x, y, true)
+        end
+      end
+    end
+    @map = temp_floor.map
   end
 
   def randomize_map
@@ -62,22 +76,6 @@ class Floor
         set_is_solid(x, y, rand(2) == 0)
       end
     end
-  end
-
-  def iterate_automata
-    temp_floor = self
-    (@height).times do |y|
-      (@width).times do |x|
-        if(empty_neighbors(x, y, 1) >= 5)
-          temp_floor.set_is_solid(x, y, true)
-        elsif(empty_neighbors(x, y, 2) <= 6)
-          temp_floor.set_is_solid(x, y, true)
-        else
-          temp_floor.set_is_solid(x, y, false)
-        end
-      end
-    end
-    @map = temp_floor.map
   end
 
   def empty_neighbors (cell_x, cell_y, radius)
@@ -142,3 +140,28 @@ class Floor
   end
 
 end
+
+# def create_caverns
+#   randomize_map()
+#   iterate_automata_special()
+#   iterate_automata_special()
+#   drunk_walk(500, false)
+#   iterate_automata_special()
+#   create_boundaries()
+# end
+#
+# def iterate_automata_special
+#   temp_floor = self
+#   (@height).times do |y|
+#     (@width).times do |x|
+#       if(empty_neighbors(x, y, 1) >= 5)
+#         temp_floor.set_is_solid(x, y, true)
+#       elsif(empty_neighbors(x, y, 2) <= 6)
+#         temp_floor.set_is_solid(x, y, true)
+#       else
+#         temp_floor.set_is_solid(x, y, false)
+#       end
+#     end
+#   end
+#   @map = temp_floor.map
+# end

@@ -34,6 +34,18 @@ describe(Floor) do
     end
   end
 
+  describe('#cellular_automata') do
+    it("Generates a series of caverns using cellular automata.") do
+      test_floor = Floor.new({:width => 80, :height => 40})
+      test_floor.cellular_automata(3)
+      if(PRINT_MAPS)
+       print("\n\nCellular Automata:\n\n")
+       test_floor.print_map()
+       print("\n")
+     end
+    end
+  end
+
   describe('#drunk_walk') do
     it("Performs the drunkard's walk generation algorithim, clearing or filling for a given number of steps.") do
       test_floor = Floor.new({:width => 80, :height => 20})
@@ -41,23 +53,11 @@ describe(Floor) do
       steps = 1000
       test_floor.drunk_walk(steps, false)
       test_floor.create_boundaries()
-      if(PRINT_MAPS)
-        print("\n\nDrunkard's Walk [#{steps} steps]:\n\n")
-        test_floor.print_map()
-        print("\n")
-      end
-    end
-  end
-
-  describe('#create_caverns') do
-    it("Creates a system of caverns using cellular automata and drunken walking.") do
-      test_floor = Floor.new({:width => 80, :height => 20})
-      test_floor.create_caverns()
-      if(PRINT_MAPS)
-        print("\n\nCellular Automata:\n\n")
-        test_floor.print_map()
-        print("\n")
-      end
+      # if(PRINT_MAPS)
+      #   print("\n\nDrunkard's Walk [#{steps} steps]:\n\n")
+      #   test_floor.print_map()
+      #   print("\n")
+      # end
     end
   end
 
@@ -65,11 +65,11 @@ describe(Floor) do
     it("Randomizes each cell with an equal probablity of being empty or solid.") do
       test_floor = Floor.new({:width => 80, :height => 20})
       test_floor.randomize_map()
-      if(PRINT_MAPS)
-        print("\n\nRandom Map:\n\n")
-        test_floor.print_map()
-        print("\n")
-      end
+      # if(PRINT_MAPS)
+      #   print("\n\nRandom Map:\n\n")
+      #   test_floor.print_map()
+      #   print("\n")
+      # end
     end
   end
 
