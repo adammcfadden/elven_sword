@@ -1,6 +1,6 @@
 class Player
   def initialize(window)
-    @image = Gosu::Image.new(window, "media/one.png", false)
+    @image = Gosu::Image.new(window, "media/fox.png", false)
     @width = 16
     @x = GameWindow::WIDTH/2
     @y = GameWindow::HEIGHT/2
@@ -12,19 +12,27 @@ class Player
   end
 
   def walk_left
-    @x -= 16
+    unless @x == GameWindow::WIDTH - GameWindow::WIDTH + @width
+      @x -= 16
+    end
   end
 
   def walk_right
-    @x += 16
+    unless @x == GameWindow::WIDTH - (2 * @width)
+      @x += 16
+    end
   end
 
   def walk_up
-    @y -= 16
+    unless @y == GameWindow::HEIGHT - GameWindow::HEIGHT + @width
+      @y -= 16
+    end
   end
 
   def walk_down
-    @y += 16
+    unless @y == GameWindow::HEIGHT - (2 * @width)
+      @y += 16
+    end
   end
 
 
