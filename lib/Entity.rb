@@ -1,6 +1,7 @@
 class Entity < ActiveRecord::Base
+  belongs_to(:battle)
 
-  def damage
+  def attack
     return 5
   end
 
@@ -39,5 +40,11 @@ class Entity < ActiveRecord::Base
     xp = self.xp
     xp += xp_reward
     self.update(xp: xp)
+  end
+
+  def level_up
+    level = self.level
+    level += 1
+    self.update(level: level, xp: 0)
   end
 end
