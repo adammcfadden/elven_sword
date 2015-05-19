@@ -11,5 +11,11 @@ describe Battle do
       expect(battle.entities).to include(player)
     end
   end
-
+# This is a non-expect test to check .random_monster functionality. Uncomment binding.pry and call 'monster' in console to find output.
+  describe '.random_monster' do
+    it 'returns a random monster' do
+      monster = Battle.random_monster
+#binding.pry
+    end
+  end
 end
