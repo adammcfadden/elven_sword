@@ -27,7 +27,13 @@ describe Battle do
       battle.attack(player, monster)
       expect(monster.health).to eq(95)
     end
-
   end
 
+  describe '#flee' do
+    it 'changes the battle to ended without killing a monster' do
+      battle = Battle.new(name: 'Battle!', boss?: false, active?: true)
+      battle.flee
+      expect(battle.active?).to eq(false)
+    end
+  end
 end

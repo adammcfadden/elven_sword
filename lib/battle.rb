@@ -44,5 +44,9 @@ class Battle < ActiveRecord::Base
     target.take_damage(attacker.attack)
   end
 
+  def flee
+    self.update(active?: false)
+  end
+
 
 end
