@@ -12,13 +12,14 @@ HEIGHT = 1280
 DELAY = 30
 
 class BattleWindow < Gosu::Window
-  def initialize
+  def initialize(player_id)
     super(WIDTH, HEIGHT, false) #map size
     self.caption = "Fight!" #window title
     @player_image = Gosu::Image.new(self, "./media/baby_fox_mccloud.jpg", false) # image tile 1
     @vs_image = Gosu::Image.new(self, "./media/vs.png", false)
     # @flee_image = Gosu::Image.new(self, "./media/fox_runs.gif", false)
     # @attack_image = Gosu::Image.new(self, "./media/sword.png", false)
+    @player = Entity.find(player_id)
     @monster_image = Gosu::Image.new(self, "./media/baby_gojira.png", false) # image tile 2
     @player_attack_sound = Gosu::Sample.new(self, "media/fox_taunt.wav")
     @monster_attack_sound = Gosu::Sample.new(self, "media/godzilla_roars.wav")
@@ -28,13 +29,13 @@ class BattleWindow < Gosu::Window
 
 #temporary entity/battle creation
     @monster = Entity.create(name: 'Gojira', str: 20, level: 1, xp: 0, health: 100,  location_x: 1, location_y: 1, pc?: false, alive?: true)
-    @player = Entity.create(name: 'Fox McCloud', str: 15, level: 1, xp: 0, health: 100,  location_x: 1, location_y: 1, pc?: true, alive?: true)
+    # @player = Entity.create(name: 'Fox McCloud', str: 15, level: 1, xp: 0, health: 100,  location_x: 1, location_y: 1, pc?: true, alive?: true)
     @weapon = Weapon.generate_random('sword')
     @player.weapons.push(@weapon)
     @weapon_2 = Weapon.generate_random('dagger')
     @monster.weapons.push(@weapon_2)
     @battle = Battle.create(name: 'Battle!', boss?: false, active?: true)
-    @battle.fetch_entities
+    # @battle.fetch_entities
 
     @player_pre_health = @player_post_health = @player.health
     @monster_pre_health = @monster_post_health = @player.health

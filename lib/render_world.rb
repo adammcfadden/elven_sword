@@ -20,7 +20,7 @@ class WorldWindow < Gosu::Window
     @floor.generate_map
     @scaler = 16 #scales the size of the image tiles to account for image size
     @countdown = 0 #is used in #update to control player speed
-    @player = Entity.create(name: 'Dirge', level: 1, xp: 0, health: 100,  location_x: 1, location_y: 1, pc?: true, image_path: 'media/fox.png', alive?: true, entity_drawn?: false)
+    @player = Entity.create(name: 'Dirge',str: 15, level: 1, xp: 0, health: 100,  location_x: 1, location_y: 1, pc?: true, image_path: 'media/fox.png', alive?: true, entity_drawn?: false)
     @entity_image = Gosu::Image.new(self, "#{@player.image_path}", false)
   end
 
