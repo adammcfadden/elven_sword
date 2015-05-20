@@ -20,7 +20,7 @@ describe Entity do
     it 'moves an entity one spot north' do
       player = Entity.create(name: 'Dirge', level: 1, health: 100, location_x: 1, location_y: 1, pc?: true, alive?: true)
       player.move_north
-      expect(player.location_y).to eq(2)
+      expect(player.location_y).to eq(0)
     end
   end
 

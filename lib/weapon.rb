@@ -11,4 +11,8 @@ class Weapon < ActiveRecord::Base
     weapon
   end
 
+  def equip
+    self.update(isequipped?: true)
+  end
+
 end

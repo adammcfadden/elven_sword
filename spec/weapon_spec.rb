@@ -9,4 +9,13 @@ describe Weapon do
     end
   end
 
+  describe '#equip' do
+    it 'switches the equipped flag to true' do
+      weapon = Weapon.generate_random('sword')
+      weapon.equip
+      expect(weapon.isequipped?).to eq(true)
+    end
+
+  end
+
 end
