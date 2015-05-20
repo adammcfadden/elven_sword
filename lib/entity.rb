@@ -1,5 +1,24 @@
 class Entity < ActiveRecord::Base
   belongs_to(:battle)
+  attr_accessor :location_x, :location_y, :player_drawn
+
+#   def initialize(window)
+# # not being used, could be useful later
+# #   @player_width = 16
+#     @window = window
+#     @location_x = 1
+#     @location_y = 1
+#     @player_drawn = false
+#   end
+
+  def entity_is_drawn
+    self.update(entity_drawn?: true)
+  end
+
+  def randomize_coords
+    self.update(location_x: Random.new.rand(1..(BOARD_WIDTH-1)))
+    self.update(location_y: Random.new.rand(1..(BOARD_WIDTH-1)))
+  end
 
   def damage
     return 5
@@ -7,13 +26,13 @@ class Entity < ActiveRecord::Base
 
   def move_north
     location = self.location_y
-    location += 1
+    location -= 1
     self.update(location_y: location)
   end
 
   def move_south
     location = self.location_y
-    location -= 1
+    location += 1
     self.update(location_y: location)
   end
 

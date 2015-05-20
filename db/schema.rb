@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150519224428) do
+ActiveRecord::Schema.define(version: 20150520180927) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -32,6 +32,8 @@ ActiveRecord::Schema.define(version: 20150519224428) do
     t.boolean "alive?"
     t.integer "xp"
     t.integer "battle_id"
+    t.string  "image_path"
+    t.boolean "entity_drawn?"
   end
 
 end
