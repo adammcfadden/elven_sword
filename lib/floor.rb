@@ -45,15 +45,99 @@ class Floor
       cellular_automata(3)
     end
     count_rooms_attributes = count_rooms()
+    room_count = count_rooms_attributes[:room_count]
+    enter_and_exit = get_entrance_and_exit()
+    chests = get_chests(enter_and_exit, count_rooms_attributes[:rooms])
     while(count_rooms_attributes[:room_count] > 1)
       connect_rooms(count_rooms_attributes[:rooms])
       count_rooms_attributes = count_rooms()
-      # print("Connected a room. Room count = #{count_rooms_attributes[:room_count]}")
     end
-    print_map()
+    print_entrance_and_exit_and_chests(enter_and_exit, chests)
     print("\nEmpty cells: #{count_empty_cells()}")
+    print("\nRoom count: #{room_count}")
   end
 
+  def rogue_automata
+    rogue_style()
+    cellular_automata(1)
+    count_rooms_attributes = count_rooms()
+    while(count_rooms_attributes[:room_count] > 1)
+      connect_rooms(count_rooms_attributes[:rooms])
+      count_rooms_attributes = count_rooms()
+    end
+    create_boundaries()
+    print_map()
+  end
+
+  def random_connected
+    randomize_map()
+    count_rooms_attributes = count_rooms()
+    while(count_rooms_attributes[:room_count] > 1)
+      connect_rooms(count_rooms_attributes[:rooms])
+      count_rooms_attributes = count_rooms()
+    end
+    create_boundaries()
+    print_map()
+  end
+
+  def random_merge_floors (other_floor)
+    @map.each_index() do |x|
+      @map[x].each_index() do |y|
+        if(x > @width/4 && x < @width/4*3 && y > @height/4 && y < @height/4*3 && rand(2) == 1)
+          set_is_solid(x, y, other_floor.is_solid?(x, y))
+        end
+      end
+    end
+    count_rooms_attributes = count_rooms()
+    while(count_rooms_attributes[:room_count] > 1)
+      connect_rooms(count_rooms_attributes[:rooms])
+      count_rooms_attributes = count_rooms()
+    end
+  end
+
+  def rogue_style
+    number_of_rooms = 30
+    fill_map(true)
+
+    number_of_rooms.times() do
+
+      invalid_room = true
+
+      while(invalid_room)
+
+        room_width = rand((@width/15).floor()..(@width/10).floor())
+        room_height = rand((@height/15).floor()..(@height/10).floor())
+        p_topright = pick_random_point()
+        invalid_room = false
+        if(!is_within_map?(p_topright[:x] + room_width, p_topright[:y] + room_height))
+          invalid_room = true
+        end
+
+        (room_width + 2).times do |w|
+          (room_height + 2).times do |h|
+            if (!is_within_map?(p_topright[:x] + w - 1, p_topright[:y] + h - 1) || !is_solid?(p_topright[:x] + w - 1, p_topright[:y] + h - 1))
+              invalid_room = true
+            end
+          end
+        end
+
+      end
+
+      room_width.times do |w|
+        room_height.times do |h|
+          set_is_solid(p_topright[:x] + w, p_topright[:y] + h, false)
+        end
+      end
+
+    end
+
+    count_rooms_attributes = count_rooms()
+    while(count_rooms_attributes[:room_count] > 1)
+      connect_rooms(count_rooms_attributes[:rooms])
+      count_rooms_attributes = count_rooms()
+    end
+
+  end
 
   def connect_rooms(rooms)
     p1 = pick_random_point()
@@ -124,8 +208,79 @@ class Floor
     return {:x => rand(@width), :y => rand(@height)}
   end
 
+  def get_entrance_and_exit
+    p_enter = pick_random_point()
+    p_exit = pick_random_point()
+    while(is_solid?(p_enter[:x], p_enter[:y]) ||
+            is_solid?(p_exit[:x], p_exit[:y]) ||
+            empty_neighbors(p_enter[:x], p_enter[:y], 1) != 9 ||
+            empty_neighbors(p_exit[:x], p_exit[:y], 1) != 9 ||
+            distance_between_points(p_enter, p_exit) < (@width + @height) / 2)
+      p_enter = pick_random_point()
+      p_exit = pick_random_point()
+    end
+    return {:enter => p_enter, :exit => p_exit}
+  end
+
+  def get_room_size(rooms, room_number)
+    room_size = 0
+    @map.each_index() do |x|
+      @map[x].each_index() do |y|
+        if(rooms[x][y] == room_number)
+          room_size += 1
+        end
+      end
+    end
+    return room_size
+  end
+
+  def get_chests(enter_and_exit, rooms)
+    number_of_chests = 3
+    chests = []
+    p_enter = enter_and_exit[:enter]
+    p_exit = enter_and_exit[:exit]
+    entrance_exit_dist = distance_between_points(p_enter, p_exit)/3
+
+    number_of_chests.times() do
+      p_chest = pick_random_point()
+      invalid_placement = true
+      invalid_count = 0
+      while(invalid_placement)
+        invalid_count += 1
+        p_chest = pick_random_point()
+        invalid_placement = false
+        if(is_solid?(p_chest[:x], p_chest[:y]))
+          invalid_placement = true
+        elsif(distance_between_points(p_chest, p_enter) < entrance_exit_dist)
+          invalid_placement = true
+        elsif(distance_between_points(p_chest, p_exit) < entrance_exit_dist)
+          invalid_placement = true
+        elsif(empty_neighbors(p_chest[:x], p_chest[:y], 1) != 9)
+          invalid_placement = true
+        elsif(get_room_size(rooms, rooms[p_chest[:x]][p_chest[:y]]) > 75)
+          invalid_placement = true
+        end
+        chests.each() do |chest|
+          if(rooms[p_chest[:x]][p_chest[:y]] == rooms[chest[:x]][chest[:y]])
+            invalid_placement = true
+          end
+        end
+        if(invalid_count > 100000)
+          return chests
+        end
+      end
+      chests.push(p_chest)
+      invalid_count = 0
+    end
+    return chests
+  end
+
+  # is_solid?(p_chest[:x], p_chest[:y]) ||
+  #       distance_between_points(p_chest, p_enter) < entrance_exit_dist ||
+  #       distance_between_points(p_chest, p_exit) <  entrance_exit_dist
+
   def flood_fill(x, y, rooms, fill_with)
-    if (!is_solid?(x, y) && rooms[x][y] == 0)
+    if (is_within_map?(x, y) && !is_solid?(x, y) && rooms[x][y] == 0)
   	  rooms[x][y] = fill_with
       flood_fill(x + 1, y, rooms, fill_with);
   	  flood_fill(x - 1, y, rooms, fill_with);
@@ -166,6 +321,13 @@ class Floor
   def cellular_automata(iterations)
     randomize_map()
     # fill_map(true)
+    iterations.times() do
+      iterate_automata()
+    end
+    create_boundaries()
+  end
+
+  def cellular_automata_no_random(iterations)
     iterations.times() do
       iterate_automata()
     end
@@ -258,6 +420,27 @@ class Floor
     (@height).times do |y|
       (@width).times do |x|
         if(is_solid?(x, y))
+          print("#")
+        else
+          print(".")
+        end
+      end
+      print("\n")
+    end
+  end
+
+  def print_entrance_and_exit_and_chests(en_and_ex, chests)
+    p_enter = en_and_ex[:enter]
+    p_exit = en_and_ex[:exit]
+    (@height).times do |y|
+      (@width).times do |x|
+        if(p_enter == {:x => x, :y => y})
+          print('>')
+        elsif(p_exit == {:x => x, :y => y})
+          print('<')
+        elsif(chests.include?({:x => x, :y => y}))
+          print('$')
+        elsif(is_solid?(x, y))
           print("#")
         else
           print(".")
