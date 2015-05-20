@@ -12,7 +12,14 @@ class Entity < ActiveRecord::Base
   end
 
   def damage
-    self.str * 5 / 10
+    weapon_bonus = 5
+    weapons = self.weapons.all
+    if weapons != []
+      max = weapons.first.max_power
+      min = weapons.first.min_power
+      weapon_bonus = Random.new.rand(min..max)
+    end
+    self.str * weapon_bonus / 10
   end
 
   def move_north

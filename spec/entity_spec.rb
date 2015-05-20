@@ -14,13 +14,21 @@ describe Entity do
       player = Entity.create(name: 'Dirge', level: 1, str: 15, health: 100, location_x: 1, location_y: 1, pc?: true, alive?: true)
       expect(player.damage).to eq(7)
     end
+
+    it 'calculates the damage when using a weapon' do
+      player = Entity.create(name: 'Dirge', level: 1, str: 15, health: 100, location_x: 1, location_y: 1, pc?: true, alive?: true)
+      weapon = Weapon.generate_random('sword')
+      player.weapons.push(weapon)
+      weapon.equip
+      expect(player.damage).to be_between(12,18).inclusive
   end
+end
 
   describe '#move_north' do
     it 'moves an entity one spot north' do
       player = Entity.create(name: 'Dirge', level: 1, health: 100, location_x: 1, location_y: 1, pc?: true, alive?: true)
       player.move_north
-      expect(player.location_y).to eq(2)
+      expect(player.location_y).to eq(0)
     end
   end
 
