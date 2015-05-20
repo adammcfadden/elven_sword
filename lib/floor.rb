@@ -57,6 +57,88 @@ class Floor
     print("\nRoom count: #{room_count}")
   end
 
+  def rogue_automata
+    rogue_style()
+    cellular_automata(1)
+    count_rooms_attributes = count_rooms()
+    while(count_rooms_attributes[:room_count] > 1)
+      connect_rooms(count_rooms_attributes[:rooms])
+      count_rooms_attributes = count_rooms()
+    end
+    create_boundaries()
+    print_map()
+  end
+
+  def random_connected
+    randomize_map()
+    count_rooms_attributes = count_rooms()
+    while(count_rooms_attributes[:room_count] > 1)
+      connect_rooms(count_rooms_attributes[:rooms])
+      count_rooms_attributes = count_rooms()
+    end
+    create_boundaries()
+    print_map()
+  end
+
+  def random_merge_floors (other_floor)
+    @map.each_index() do |x|
+      @map[x].each_index() do |y|
+        if(x > @width/4 && x < @width/4*3 && y > @height/4 && y < @height/4*3 && rand(2) == 1)
+          set_is_solid(x, y, other_floor.is_solid?(x, y))
+        end
+      end
+    end
+    count_rooms_attributes = count_rooms()
+    while(count_rooms_attributes[:room_count] > 1)
+      connect_rooms(count_rooms_attributes[:rooms])
+      count_rooms_attributes = count_rooms()
+    end
+  end
+
+  def rogue_style
+    number_of_rooms = 30
+    fill_map(true)
+
+    number_of_rooms.times() do
+
+      invalid_room = true
+
+      while(invalid_room)
+
+        room_width = rand((@width/15).floor()..(@width/10).floor())
+        room_height = rand((@height/15).floor()..(@height/10).floor())
+        p_topright = pick_random_point()
+        invalid_room = false
+        if(!is_within_map?(p_topright[:x] + room_width, p_topright[:y] + room_height))
+          invalid_room = true
+        end
+
+        (room_width + 2).times do |w|
+          (room_height + 2).times do |h|
+            if (!is_within_map?(p_topright[:x] + w - 1, p_topright[:y] + h - 1) || !is_solid?(p_topright[:x] + w - 1, p_topright[:y] + h - 1))
+              invalid_room = true
+            end
+          end
+        end
+
+      end
+
+      room_width.times do |w|
+        room_height.times do |h|
+          set_is_solid(p_topright[:x] + w, p_topright[:y] + h, false)
+        end
+      end
+
+    end
+
+    count_rooms_attributes = count_rooms()
+    while(count_rooms_attributes[:room_count] > 1)
+      connect_rooms(count_rooms_attributes[:rooms])
+      count_rooms_attributes = count_rooms()
+    end
+
+  end
+
   def connect_rooms(rooms)
     p1 = pick_random_point()
     while(rooms[p1.fetch(:x)][p1.fetch(:y)] == 0)
@@ -198,7 +280,7 @@ class Floor
   #       distance_between_points(p_chest, p_exit) <  entrance_exit_dist
 
   def flood_fill(x, y, rooms, fill_with)
-    if (!is_solid?(x, y) && rooms[x][y] == 0)
+    if (is_within_map?(x, y) && !is_solid?(x, y) && rooms[x][y] == 0)
   	  rooms[x][y] = fill_with
       flood_fill(x + 1, y, rooms, fill_with);
   	  flood_fill(x - 1, y, rooms, fill_with);
