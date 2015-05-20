@@ -1,3 +1,5 @@
+require('matrix')
+
 class Floor
 
   attr_reader(:width, :height, :map)
@@ -18,6 +20,120 @@ class Floor
       end
     end
   end
+
+  def count_rooms
+    room_count = 0
+    rooms = Array.new(@width)
+    rooms.each_index() do |index|
+      rooms[index] = Array.new(@height, 0)
+    end
+    @map.each_index() do |x|
+      @map[x].each_index() do |y|
+        if(!is_solid?(x, y) && rooms[x][y] == 0)
+          room_count += 1
+          flood_fill(x, y, rooms, room_count)
+        end
+      end
+    end
+    return {:rooms => rooms, :room_count => room_count}
+  end
+
+  def generate_map
+    min_rooms = 10
+    cellular_automata(3)
+    while(count_rooms()[:room_count] < min_rooms)
+      cellular_automata(3)
+    end
+    count_rooms_attributes = count_rooms()
+    while(count_rooms_attributes[:room_count] > 1)
+      connect_rooms(count_rooms_attributes[:rooms])
+      count_rooms_attributes = count_rooms()
+      # print("Connected a room. Room count = #{count_rooms_attributes[:room_count]}")
+    end
+    print_map()
+    print("\nEmpty cells: #{count_empty_cells()}")
+  end
+
+
+  def connect_rooms(rooms)
+    p1 = pick_random_point()
+    while(rooms[p1.fetch(:x)][p1.fetch(:y)] == 0)
+      p1 = pick_random_point()
+    end
+    p2 = pick_random_point()
+    while(rooms[p2.fetch(:x)][p2.fetch(:y)] == 0 || rooms[p2.fetch(:x)][p2.fetch(:y)] == rooms[p1.fetch(:x)][p1.fetch(:y)])
+      p2 = pick_random_point()
+    end
+
+    # get P1 as close as possible to P2
+    @map.each_index() do |x|
+      @map[x].each_index() do |y|
+        if(rooms[x][y] == rooms[p1.fetch(:x)][p1.fetch(:y)])
+          if(distance_between_points(p1, p2) > distance_between_points({:x => x, :y => y}, p2))
+            p1 = {:x => x, :y => y}
+          end
+        end
+      end
+    end
+
+    # get P2 as close as possible to P1
+    @map.each_index() do |x|
+      @map[x].each_index() do |y|
+        if(rooms[x][y] == rooms[p2.fetch(:x)][p2.fetch(:y)])
+          if(distance_between_points(p1, p2) > distance_between_points(p1, {:x => x, :y => y}))
+            p2 = {:x => x, :y => y}
+          end
+        end
+      end
+    end
+
+    pdig = {:x => p1[:x], :y => p1[:y]}
+    move_point_towards_point(pdig, p2)
+
+    while(pdig != p2 && rooms[pdig.fetch(:x)][pdig.fetch(:y)] == 0)
+      rooms[pdig.fetch(:x)][pdig.fetch(:y)] = '.'
+      set_is_solid(pdig.fetch(:x), pdig.fetch(:y), false)
+      pdig = move_point_towards_point(pdig, p2)
+    end
+
+    rooms[p1.fetch(:x)][p1.fetch(:y)] = 'M'
+    rooms[p2.fetch(:x)][p2.fetch(:y)] = 'T'
+
+    return rooms
+  end
+
+  def move_point_towards_point(move_point, towards_point)
+    if(move_point[:x] < towards_point[:x])
+      move_point.update({:x => move_point[:x] + 1})
+    elsif(move_point[:x] > towards_point[:x])
+      move_point.update({:x => move_point[:x] - 1})
+    elsif(move_point[:y] < towards_point[:y])
+      move_point.update({:y => move_point[:y] + 1})
+    elsif(move_point[:y] > towards_point[:y])
+      move_point.update({:y => move_point[:y] - 1})
+    end
+    return move_point
+  end
+
+  def distance_between_points(p1, p2)
+    v = Vector[p1.fetch(:x) - p2.fetch(:x), p1.fetch(:y) - p2.fetch(:y)]
+    return v.magnitude()
+  end
+
+  def pick_random_point
+    return {:x => rand(@width), :y => rand(@height)}
+  end
+
+  def flood_fill(x, y, rooms, fill_with)
+    if (!is_solid?(x, y) && rooms[x][y] == 0)
+  	  rooms[x][y] = fill_with
+      flood_fill(x + 1, y, rooms, fill_with);
+  	  flood_fill(x - 1, y, rooms, fill_with);
+  	  flood_fill(x, y + 1, rooms, fill_with);
+  	  flood_fill(x, y - 1, rooms, fill_with);
+    end
+  end
+
 
   def create_boundaries
     @map.each_index() do |x|
@@ -78,6 +194,18 @@ class Floor
     end
   end
 
+  def count_empty_cells
+    empty_cell_count = 0
+    @map.each_index() do |x|
+      @map[x].each_index() do |y|
+        if(is_solid?(x, y))
+          empty_cell_count += 1
+        end
+      end
+    end
+    return empty_cell_count
+  end
+
   def empty_neighbors (cell_x, cell_y, radius)
     empty_neighbors = 0
     x = cell_x - radius
@@ -133,6 +261,19 @@ class Floor
           print("#")
         else
           print(".")
+        end
+      end
+      print("\n")
+    end
+  end
+
+  def print_count_rooms (rooms)
+    (@height).times do |y|
+      (@width).times do |x|
+        if(rooms[x][y] == 0)
+          print('-')
+        else
+          print(rooms[x][y])
         end
       end
       print("\n")
