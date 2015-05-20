@@ -2,6 +2,8 @@ require 'gosu'
 require 'sinatra/activerecord'
 require './lib/floor'
 require './lib/entity'
+require './lib/battle'
+require './lib/render_battle'
 require 'pry'
 
 BOARD_WIDTH = 40
@@ -82,6 +84,10 @@ class WorldWindow < Gosu::Window
           @player.move_south
         end
       end
+    end
+    if button_down? Gosu::KbA then
+      battle_window = BattleWindow.new(@player.id)
+      battle_window.show
     end
   end
 end
