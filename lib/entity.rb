@@ -1,5 +1,19 @@
 class Entity < ActiveRecord::Base
   belongs_to(:battle)
+  attr_accessor :location_x, :location_y, :player_drawn
+
+#   def initialize(window)
+# # not being used, could be useful later
+# #   @player_width = 16
+#     @window = window
+#     @location_x = 1
+#     @location_y = 1
+#     @player_drawn = false
+#   end
+
+  def image_create(window)
+    @entity_image = Gosu::Image.new(window, "#{self.image_path}", false)
+  end
 
   def damage
     return 5

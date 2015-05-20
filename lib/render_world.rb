@@ -19,7 +19,8 @@ class WorldWindow < Gosu::Window
     @floor.create_boundaries
     @scaler = 16 #scales the size of the image tiles to account for image size
     @countdown = 0 #is used in #update to control player speed
-    @player = Player.new(self)
+    @player = Entity.create(name: 'Dirge', level: 1, xp: 0, health: 100,  location_x: 1, location_y: 1, pc?: true, alive?: true))
+    @player.image_create(window)
   end
 
   def draw
@@ -35,7 +36,7 @@ class WorldWindow < Gosu::Window
     end
     #draws player at random location that is not solid.
     until @player.player_drawn do
-      unless @floor.is_solid?(@player.x, @player.y)
+      unless @floor.is_solid?(@player.location_x, @player.location_y)
         @player.draw_player
       else
         @player.randomize_coords
@@ -49,7 +50,7 @@ class WorldWindow < Gosu::Window
       @countdown -= 1
     end
     if button_down? Gosu::KbLeft then
-      unless @floor.is_solid?((@player.x - 1), @player.y)
+      unless @floor.is_solid?((@player.location_x - 1), @player.location_y)
         if @countdown == 0
           @countdown = TICKS_PER_STEP
           @player.walk_left
@@ -57,7 +58,7 @@ class WorldWindow < Gosu::Window
       end
     end
     if button_down? Gosu::KbRight then
-      unless @floor.is_solid?((@player.x + 1), @player.y)
+      unless @floor.is_solid?((@player.location_x + 1), @player.location_y)
         if @countdown == 0
           @countdown = TICKS_PER_STEP
           @player.walk_right
@@ -65,7 +66,7 @@ class WorldWindow < Gosu::Window
       end
     end
     if button_down? Gosu::KbUp then
-      unless @floor.is_solid?(@player.x, @player.y - 1)
+      unless @floor.is_solid?(@player.location_x, @player.location_y - 1)
         if @countdown == 0
           @countdown = TICKS_PER_STEP
           @player.walk_up
@@ -73,7 +74,7 @@ class WorldWindow < Gosu::Window
       end
     end
     if button_down? Gosu::KbDown then
-      unless @floor.is_solid?(@player.x, @player.y + 1)
+      unless @floor.is_solid?(@player.location_x, @player.location_y + 1)
         if @countdown == 0
           @countdown = TICKS_PER_STEP
           @player.walk_down
