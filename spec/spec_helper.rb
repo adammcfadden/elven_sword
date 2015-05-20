@@ -5,8 +5,10 @@ require 'rspec'
 require 'entity'
 require 'battle'
 require 'weapon'
+require 'weapon'
 require 'pry'
 require 'pg'
+
 require 'shoulda-matchers'
 
 RSpec.configure do |config|
