@@ -11,8 +11,13 @@ class Entity < ActiveRecord::Base
 #     @player_drawn = false
 #   end
 
-  def image_create(window)
-    @entity_image = Gosu::Image.new(window, "#{self.image_path}", false)
+  def entity_is_drawn
+    self.update(entity_drawn?: true)
+  end
+
+  def randomize_coords
+    self.update(location_x: Random.new.rand(1..(BOARD_WIDTH-1)))
+    self.update(location_y: Random.new.rand(1..(BOARD_WIDTH-1)))
   end
 
   def damage
@@ -21,13 +26,13 @@ class Entity < ActiveRecord::Base
 
   def move_north
     location = self.location_y
-    location += 1
+    location -= 1
     self.update(location_y: location)
   end
 
   def move_south
     location = self.location_y
-    location -= 1
+    location += 1
     self.update(location_y: location)
   end
 

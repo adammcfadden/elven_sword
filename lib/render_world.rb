@@ -1,6 +1,8 @@
 require 'gosu'
+require 'sinatra/activerecord'
 require './lib/floor'
-require './lib/player'
+require './lib/entity'
+require 'pry'
 
 BOARD_WIDTH = 40
 BOARD_HEIGHT = 80
@@ -19,8 +21,8 @@ class WorldWindow < Gosu::Window
     @floor.create_boundaries
     @scaler = 16 #scales the size of the image tiles to account for image size
     @countdown = 0 #is used in #update to control player speed
-    @player = Entity.create(name: 'Dirge', level: 1, xp: 0, health: 100,  location_x: 1, location_y: 1, pc?: true, alive?: true))
-    @player.image_create(window)
+    @player = Entity.create(name: 'Dirge', level: 1, xp: 0, health: 100,  location_x: 1, location_y: 1, pc?: true, image_path: 'media/fox.png', alive?: true, entity_drawn?: false)
+    @entity_image = Gosu::Image.new(self, "#{@player.image_path}", false)
   end
 
   def draw
@@ -35,14 +37,14 @@ class WorldWindow < Gosu::Window
       end
     end
     #draws player at random location that is not solid.
-    until @player.player_drawn do
+    until @player.entity_drawn? do
       unless @floor.is_solid?(@player.location_x, @player.location_y)
-        @player.draw_player
+        @player.entity_is_drawn
       else
         @player.randomize_coords
       end
     end
-    @player.draw
+    @entity_image.draw(@player.location_x*16, @player.location_y*16, 1)
   end
 
   def update
@@ -53,7 +55,7 @@ class WorldWindow < Gosu::Window
       unless @floor.is_solid?((@player.location_x - 1), @player.location_y)
         if @countdown == 0
           @countdown = TICKS_PER_STEP
-          @player.walk_left
+          @player.move_west
         end
       end
     end
@@ -61,7 +63,7 @@ class WorldWindow < Gosu::Window
       unless @floor.is_solid?((@player.location_x + 1), @player.location_y)
         if @countdown == 0
           @countdown = TICKS_PER_STEP
-          @player.walk_right
+          @player.move_east
         end
       end
     end
@@ -69,7 +71,7 @@ class WorldWindow < Gosu::Window
       unless @floor.is_solid?(@player.location_x, @player.location_y - 1)
         if @countdown == 0
           @countdown = TICKS_PER_STEP
-          @player.walk_up
+          @player.move_north
         end
       end
     end
@@ -77,7 +79,7 @@ class WorldWindow < Gosu::Window
       unless @floor.is_solid?(@player.location_x, @player.location_y + 1)
         if @countdown == 0
           @countdown = TICKS_PER_STEP
-          @player.walk_down
+          @player.move_south
         end
       end
     end
