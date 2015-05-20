@@ -39,22 +39,46 @@ binding.pry
 
   def draw
     draw_quad(1, 1, 0xffffffff, WIDTH, 1, 0xffffffff, WIDTH, HEIGHT, 0xffff0000, 1, HEIGHT, 0xffff0000, 0)
-    @player_image.draw(150, 200, 1, scale_x = 0.75, scale_y = 0.75)
+    @player_image.draw(150, 150, 1, scale_x = 0.75, scale_y = 0.75)
     @vs_image.draw(750, 300, 1)
-    @monster_image.draw(1050, 225, 1, scale_x = 1.25, scale_y = 1.25)
+    @monster_image.draw(1050, 175, 1, scale_x = 1.25, scale_y = 1.25)
 
-    @font.draw("NAME: #{@player.name}", 150, 850, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
-    @font.draw("HEALTH: #{@player.health}", 200, 900, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
-    @font.draw("  LEVEL: #{@player.level}", 200, 950, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
-    @font.draw("     XP: #{@player.xp}", 200, 1000, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
+    @font.draw("NAME: #{@player.name}", 150, 800, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
+    @font.draw("HEALTH: #{@player.health}", 200, 850, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
+    @font.draw("  LEVEL: #{@player.level}", 200, 900, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
+    @font.draw("     XP: #{@player.xp}", 200, 950, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
 
-    @font.draw("NAME: #{@monster.name}", 1050, 850, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
-    @font.draw("HEALTH: #{@monster.health}", 1100, 900, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
-    @font.draw("  LEVEL: #{@monster.level}", 1100, 950, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
-    @font.draw("     XP: #{@monster.xp}", 1100, 1000, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
+    @font.draw("NAME: #{@monster.name}", 1050, 800, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
+    @font.draw("HEALTH: #{@monster.health}", 1100, 850, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
+    @font.draw("  LEVEL: #{@monster.level}", 1100, 900, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
+    @font.draw("     XP: #{@monster.xp}", 1100, 950, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
 
     if @countdown/60 > 0
       @font.draw("Chill #{@countdown/60} second(s)", 600, 750, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
+    end
+    if @monster.alive? && @player.alive?
+      @font.draw("ALIVE", 250, 1000, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
+      @font.draw("ALIVE", 1150, 1000, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
+    end
+    # @monster.update(alive?: false)
+    # @player.update(alive?: false)
+    if !(@monster.alive?) && !(@player.alive?)
+      @font.draw("Mutually Assured Destruction, Baby!", 450, 700, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
+      @font.draw("DEAD", 250, 1000, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
+      @font.draw("DEAD", 1150, 1000, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
+    end
+    #@monster.update(alive?: false)
+    if !(@monster.alive?) && @player.alive?
+      @font.draw("Total Monster DESTRUCTION!", 450, 700, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
+      @font.draw("ALIVE", 250, 1000, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
+      @font.draw("DEAD", 1150, 1000, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
+    end
+    @player.update(alive?: false)
+    if !(@player.alive?) && @monster.alive?
+      @font.draw("Adieu, mon ami!", 600, 675, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
+      @font.draw("As vee zay in France, don' layt yo petite frog-legs gayt zo cloze to zee butterr.", 225, 725, 2, scale_x = 2, scale_y = 3, color = 0xff_ffffff)
+      @font.draw("DEAD", 250, 1000, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
+      @font.draw("ALIVE", 1150, 1000, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
     end
 
     @font.draw(" (A)TTACK!", 150, 1100, 2, scale_x = 5, scale_y = 5, color = 0xff_ffffff)
@@ -66,14 +90,14 @@ binding.pry
       if @countdown > 0 then
         @countdown -= 1
       end
-      if (button_down? Gosu::KbA) && @battle.active? then
+      if (button_down? Gosu::KbA) && @battle.active? && @monster.alive? && @player.alive? then
   #     self.attack
         if @countdown == 0
-           @player_attack_sound.play
+  #        @player_attack_sound.play
            @countdown = DELAY
-  #        @monster_attack_sound.play
-           @battle.attack(@player, @monster)
-           @battle.attack(@monster, @player)
+           @monster_attack_sound.play
+  #         @battle.attack(@player, @monster)
+  #         @battle.attack(@monster, @player)
         end
       end
       if (button_down? Gosu::KbF) && @battle.active? then
