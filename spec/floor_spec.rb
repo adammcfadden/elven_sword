@@ -30,13 +30,22 @@ describe(Floor) do
   #   end
   # end
 
-  describe('#count_rooms') do
-    it("Counts the number of discrete groups of contigous empty cells on the map.") do
+  # describe('#count_rooms') do
+  #   it("Counts the number of discrete groups of contigous empty cells on the map.") do
+  #     test_floor = Floor.new({:width => 80, :height => 40})
+  #     test_floor.cellular_automata(3)
+  #     #  print("\n\nRoom Counter:\n\n")
+  #      test_floor.count_rooms()
+  #     #  print("\n")
+  #   end
+  # end
+
+  describe('#generate_map') do
+    it("Generates a fully connected map using cellular automata.") do
+      print("\n\nGenerate Map:\n\n")
       test_floor = Floor.new({:width => 80, :height => 40})
-      test_floor.cellular_automata(3)
-       print("\n\nRoom Counter:\n\n")
-       test_floor.count_rooms()
-       print("\n")
+      test_floor.generate_map()
+      print("\n")
     end
   end
 

@@ -1,3 +1,5 @@
+require('matrix')
+
 class Floor
 
   attr_reader(:width, :height, :map)
@@ -19,7 +21,7 @@ class Floor
     end
   end
 
-  def count_rooms()
+  def count_rooms
     room_count = 0
     rooms = Array.new(@width)
     rooms.each_index() do |index|
@@ -33,8 +35,87 @@ class Floor
         end
       end
     end
-    print_count_rooms(rooms)
-    return room_count
+    return {:rooms => rooms, :room_count => room_count}
+  end
+
+  def generate_map
+    cellular_automata(3)
+    count_rooms_attributes = count_rooms()
+    while(count_rooms_attributes[:room_count] > 1)
+      connect_rooms(count_rooms_attributes[:rooms])
+      count_rooms_attributes = count_rooms()
+      # print("Connected a room. Room count = #{count_rooms_attributes[:room_count]}")
+    end
+    print_map()
+  end
+
+  def connect_rooms(rooms)
+    p1 = pick_random_point()
+    while(rooms[p1.fetch(:x)][p1.fetch(:y)] == 0)
+      p1 = pick_random_point()
+    end
+    p2 = pick_random_point()
+    while(rooms[p2.fetch(:x)][p2.fetch(:y)] == 0 || rooms[p2.fetch(:x)][p2.fetch(:y)] == rooms[p1.fetch(:x)][p1.fetch(:y)])
+      p2 = pick_random_point()
+    end
+
+    # get P1 as close as possible to P2
+    @map.each_index() do |x|
+      @map[x].each_index() do |y|
+        if(rooms[x][y] == rooms[p1.fetch(:x)][p1.fetch(:y)])
+          if(distance_between_points(p1, p2) > distance_between_points({:x => x, :y => y}, p2))
+            p1 = {:x => x, :y => y}
+          end
+        end
+      end
+    end
+
+    # get P2 as close as possible to P1
+    @map.each_index() do |x|
+      @map[x].each_index() do |y|
+        if(rooms[x][y] == rooms[p2.fetch(:x)][p2.fetch(:y)])
+          if(distance_between_points(p1, p2) > distance_between_points(p1, {:x => x, :y => y}))
+            p2 = {:x => x, :y => y}
+          end
+        end
+      end
+    end
+
+    pdig = {:x => p1[:x], :y => p1[:y]}
+    move_point_towards_point(pdig, p2)
+
+    while(pdig != p2 && rooms[pdig.fetch(:x)][pdig.fetch(:y)] == 0)
+      rooms[pdig.fetch(:x)][pdig.fetch(:y)] = '.'
+      set_is_solid(pdig.fetch(:x), pdig.fetch(:y), false)
+      pdig = move_point_towards_point(pdig, p2)
+    end
+
+    rooms[p1.fetch(:x)][p1.fetch(:y)] = 'M'
+    rooms[p2.fetch(:x)][p2.fetch(:y)] = 'T'
+
+    return rooms
+  end
+
+  def move_point_towards_point(move_point, towards_point)
+    if(move_point[:x] < towards_point[:x])
+      move_point.update({:x => move_point[:x] + 1})
+    elsif(move_point[:x] > towards_point[:x])
+      move_point.update({:x => move_point[:x] - 1})
+    elsif(move_point[:y] < towards_point[:y])
+      move_point.update({:y => move_point[:y] + 1})
+    elsif(move_point[:y] > towards_point[:y])
+      move_point.update({:y => move_point[:y] - 1})
+    end
+    return move_point
+  end
+
+  def distance_between_points(p1, p2)
+    v = Vector[p1.fetch(:x) - p2.fetch(:x), p1.fetch(:y) - p2.fetch(:y)]
+    return v.magnitude()
+  end
+
+  def pick_random_point
+    return {:x => rand(@width), :y => rand(@height)}
   end
 
   def flood_fill(x, y, rooms, fill_with)
