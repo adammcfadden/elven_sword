@@ -12,9 +12,10 @@ HEIGHT = 1280
 DELAY = 200
 
 class BattleWindow < Gosu::Window
-  def initialize
+  def initialize(player_id)
     super(WIDTH, HEIGHT, false) #map size
     self.caption = "Fight!" #window title
+    @player = Entity.find(player_id)
     @player_image = Gosu::Image.new(self, "./media/baby_fox_mccloud.jpg", false) # image tile 1
     @vs_image = Gosu::Image.new(self, "./media/vs.png", false)
     # @flee_image = Gosu::Image.new(self, "./media/fox_runs.gif", false)
@@ -28,12 +29,10 @@ class BattleWindow < Gosu::Window
 
 #temporary entity/battle creation
     @monster = Entity.create(name: 'Gojira', str: 100, level: 1, xp: 0, health: 100,  location_x: 1, location_y: 1, pc?: false, alive?: true)
-    @player = Entity.create(name: 'Fox McCloud', str: 15, level: 1, xp: 0, health: 100,  location_x: 1, location_y: 1, pc?: true, alive?: true)
+    # @player = Entity.create(name: 'Fox McCloud', str: 15, level: 1, xp: 0, health: 100,  location_x: 1, location_y: 1, pc?: true, alive?: true)
     @weapon = Weapon.generate_random('sword')
     @player.weapons.push(@weapon)
     @battle = Battle.create(name: 'Battle!', boss?: false, active?: true)
-    @battle.fetch_entities
-binding.pry
   end
 
 
