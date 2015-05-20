@@ -1,15 +1,25 @@
 class Player
-  attr_accessor :x, :y
+  attr_accessor :x, :y, :player_drawn
   def initialize(window)
     @image = Gosu::Image.new(window, "media/fox.png", false)
     @width = 16
-    @x = 10
-    @y = 10
+    @x = 1
+    @y = 1
+    @player_drawn = false
+  end
+
+  def randomize_coords
+    @x = Random.new.rand(1..78)
+    @y = Random.new.rand(1..78)
+  end
+
+  def draw_player
+    @player_drawn = true
   end
 
   def warp(x, y)
-    x = @x
-    y = @y
+    @x = x
+    @y = y
   end
 
   def walk_left
