@@ -41,7 +41,7 @@ class Battle < ActiveRecord::Base
   end
 
   def attack(attacker, target)
-    target.take_damage(attacker.attack)
+    target.take_damage(attacker.damage)
   end
 
   def flee
