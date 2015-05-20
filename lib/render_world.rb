@@ -1,33 +1,34 @@
 require 'gosu'
+require 'sinatra/activerecord'
 require './lib/floor'
-require './lib/player'
+require './lib/entity'
+require 'pry'
 
-BOARD_WIDTH = 80
+BOARD_WIDTH = 40
 BOARD_HEIGHT = 80
 TICKS_PER_STEP = 5
 
-class GameWindow < Gosu::Window
+class WorldWindow < Gosu::Window
   def initialize
-    super(1280, 1280, false) #map size
+    super(BOARD_WIDTH*16, BOARD_HEIGHT*16, false) #map size
     self.caption = "Render Map" #window title
     @floor_image = Gosu::Image.new(self, "./media/floor.png", false) # image tile 1
     @wall_image = Gosu::Image.new(self, "./media/wall.gif", false) # image tile 2
     @floor = Floor.new({:width => BOARD_WIDTH, :height => BOARD_HEIGHT}) # call toby's mapmaker
     @floor.fill_map(true)
-    steps = 40000
+    steps = 4000
     @floor.drunk_walk(steps ,false)
     @floor.create_boundaries
     @scaler = 16 #scales the size of the image tiles to account for image size
-    @countdown = 0
-    @player = Player.new(self)
+    @countdown = 0 #is used in #update to control player speed
+    @player = Entity.create(name: 'Dirge', level: 1, xp: 0, health: 100,  location_x: 1, location_y: 1, pc?: true, image_path: 'media/fox.png', alive?: true, entity_drawn?: false)
+    @entity_image = Gosu::Image.new(self, "#{@player.image_path}", false)
   end
 
-
-
-
   def draw
-    @floor.map.each_index do |y|
-      @floor.map[y].each_index do |x|
+    #draws map
+    @floor.map.each_index do |x|
+      @floor.map[x].each_index do |y|
         if(@floor.is_solid?(x, y))
           @wall_image.draw(x*@scaler, y*@scaler, 0)
         else
@@ -35,14 +36,15 @@ class GameWindow < Gosu::Window
         end
       end
     end
-    until @player.player_drawn do
-      unless @floor.is_solid?(@player.x, @player.y)
-        @player.draw_player
+    #draws player at random location that is not solid.
+    until @player.entity_drawn? do
+      unless @floor.is_solid?(@player.location_x, @player.location_y)
+        @player.entity_is_drawn
       else
         @player.randomize_coords
       end
     end
-    @player.draw
+    @entity_image.draw(@player.location_x*16, @player.location_y*16, 1)
   end
 
   def update
@@ -50,39 +52,36 @@ class GameWindow < Gosu::Window
       @countdown -= 1
     end
     if button_down? Gosu::KbLeft then
-      unless @floor.is_solid?((@player.x - 1), @player.y)
+      unless @floor.is_solid?((@player.location_x - 1), @player.location_y)
         if @countdown == 0
           @countdown = TICKS_PER_STEP
-          @player.walk_left
+          @player.move_west
         end
       end
     end
     if button_down? Gosu::KbRight then
-      unless @floor.is_solid?((@player.x + 1), @player.y)
+      unless @floor.is_solid?((@player.location_x + 1), @player.location_y)
         if @countdown == 0
           @countdown = TICKS_PER_STEP
-          @player.walk_right
+          @player.move_east
         end
       end
     end
     if button_down? Gosu::KbUp then
-      unless @floor.is_solid?(@player.x, @player.y - 1)
+      unless @floor.is_solid?(@player.location_x, @player.location_y - 1)
         if @countdown == 0
           @countdown = TICKS_PER_STEP
-          @player.walk_up
+          @player.move_north
         end
       end
     end
     if button_down? Gosu::KbDown then
-      unless @floor.is_solid?(@player.x, @player.y + 1)
+      unless @floor.is_solid?(@player.location_x, @player.location_y + 1)
         if @countdown == 0
           @countdown = TICKS_PER_STEP
-          @player.walk_down
+          @player.move_south
         end
       end
     end
   end
 end
-
-window = GameWindow.new
-window.show

@@ -49,6 +49,8 @@ ActiveRecord::Schema.define(version: 20150520172735) do
     t.integer "max_power"
     t.integer "min_power"
     t.boolean "isequipped?"
+    t.string  "image_path"
+    t.boolean "entity_drawn?"
   end
 
 end

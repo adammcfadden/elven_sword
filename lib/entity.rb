@@ -1,20 +1,29 @@
 class Entity < ActiveRecord::Base
   belongs_to :battle
   has_and_belongs_to_many :weapons
-  def damage
 
+  def entity_is_drawn
+    self.update(entity_drawn?: true)
+  end
+
+  def randomize_coords
+    self.update(location_x: Random.new.rand(1..(BOARD_WIDTH-1)))
+    self.update(location_y: Random.new.rand(1..(BOARD_WIDTH-1)))
+  end
+
+  def damage
     self.str * 5 / 10
   end
 
   def move_north
     location = self.location_y
-    location += 1
+    location -= 1
     self.update(location_y: location)
   end
 
   def move_south
     location = self.location_y
-    location -= 1
+    location += 1
     self.update(location_y: location)
   end
 
