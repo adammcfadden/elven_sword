@@ -6,7 +6,7 @@ require './lib/battle'
 require './lib/render_battle'
 require 'pry'
 
-BOARD_WIDTH = 40
+BOARD_WIDTH = 80
 BOARD_HEIGHT = 80
 TICKS_PER_STEP = 5
 
