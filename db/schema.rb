@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20150520170928) do
+ActiveRecord::Schema.define(version: 20150520172735) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -33,6 +33,22 @@ ActiveRecord::Schema.define(version: 20150520170928) do
     t.integer "xp"
     t.integer "battle_id"
     t.integer "str"
+  end
+
+  create_table "entities_weapons", id: false, force: :cascade do |t|
+    t.integer "entity_id"
+    t.integer "weapon_id"
+  end
+
+  add_index "entities_weapons", ["entity_id"], name: "index_entities_weapons_on_entity_id", using: :btree
+  add_index "entities_weapons", ["weapon_id"], name: "index_entities_weapons_on_weapon_id", using: :btree
+
+  create_table "weapons", force: :cascade do |t|
+    t.string  "name"
+    t.string  "type"
+    t.integer "max_power"
+    t.integer "min_power"
+    t.boolean "isequipped?"
   end
 
 end

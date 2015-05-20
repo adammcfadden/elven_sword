@@ -1,7 +1,8 @@
 class Entity < ActiveRecord::Base
-  belongs_to(:battle)
-
+  belongs_to :battle
+  has_and_belongs_to_many :weapons
   def damage
+
     self.str * 5 / 10
   end
 
