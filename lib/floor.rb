@@ -39,7 +39,11 @@ class Floor
   end
 
   def generate_map
+    min_rooms = 10
     cellular_automata(3)
+    while(count_rooms()[:room_count] < min_rooms)
+      cellular_automata(3)
+    end
     count_rooms_attributes = count_rooms()
     while(count_rooms_attributes[:room_count] > 1)
       connect_rooms(count_rooms_attributes[:rooms])
@@ -47,7 +51,9 @@ class Floor
       # print("Connected a room. Room count = #{count_rooms_attributes[:room_count]}")
     end
     print_map()
+    print("\nEmpty cells: #{count_empty_cells()}")
   end
+
 
   def connect_rooms(rooms)
     p1 = pick_random_point()
@@ -186,6 +192,18 @@ class Floor
         set_is_solid(x, y, rand(2) == 0)
       end
     end
+  end
+
+  def count_empty_cells
+    empty_cell_count = 0
+    @map.each_index() do |x|
+      @map[x].each_index() do |y|
+        if(is_solid?(x, y))
+          empty_cell_count += 1
+        end
+      end
+    end
+    return empty_cell_count
   end
 
   def empty_neighbors (cell_x, cell_y, radius)
