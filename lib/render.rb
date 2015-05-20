@@ -14,7 +14,7 @@ class GameWindow < Gosu::Window
     @wall_image = Gosu::Image.new(self, "./media/wall.gif", false) # image tile 2
     @floor = Floor.new({:width => BOARD_WIDTH, :height => BOARD_HEIGHT}) # call toby's mapmaker
     @floor.fill_map(true)
-    steps = 30000
+    steps = 40000
     @floor.drunk_walk(steps ,false)
     @floor.create_boundaries
     @scaler = 16 #scales the size of the image tiles to account for image size
@@ -22,8 +22,10 @@ class GameWindow < Gosu::Window
     @player = Player.new(self)
   end
 
+
+
+
   def draw
-    @player.draw
     @floor.map.each_index do |y|
       @floor.map[y].each_index do |x|
         if(@floor.is_solid?(x, y))
@@ -33,6 +35,14 @@ class GameWindow < Gosu::Window
         end
       end
     end
+    until @player.player_drawn do
+      unless @floor.is_solid?(@player.x, @player.y)
+        @player.draw_player
+      else
+        @player.randomize_coords
+      end
+    end
+    @player.draw
   end
 
   def update
