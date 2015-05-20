@@ -19,6 +19,35 @@ class Floor
     end
   end
 
+  def count_rooms()
+    room_count = 0
+    rooms = Array.new(@width)
+    rooms.each_index() do |index|
+      rooms[index] = Array.new(@height, 0)
+    end
+    @map.each_index() do |x|
+      @map[x].each_index() do |y|
+        if(!is_solid?(x, y) && rooms[x][y] == 0)
+          room_count += 1
+          flood_fill(x, y, rooms, room_count)
+        end
+      end
+    end
+    print_count_rooms(rooms)
+    return room_count
+  end
+
+  def flood_fill(x, y, rooms, fill_with)
+    if (!is_solid?(x, y) && rooms[x][y] == 0)
+  	  rooms[x][y] = fill_with
+      flood_fill(x + 1, y, rooms, fill_with);
+  	  flood_fill(x - 1, y, rooms, fill_with);
+  	  flood_fill(x, y + 1, rooms, fill_with);
+  	  flood_fill(x, y - 1, rooms, fill_with);
+    end
+  end
+
+
   def create_boundaries
     @map.each_index() do |x|
       @map[x].each_index() do |y|
@@ -133,6 +162,19 @@ class Floor
           print("#")
         else
           print(".")
+        end
+      end
+      print("\n")
+    end
+  end
+
+  def print_count_rooms (rooms)
+    (@height).times do |y|
+      (@width).times do |x|
+        if(rooms[x][y] == 0)
+          print('-')
+        else
+          print(rooms[x][y])
         end
       end
       print("\n")

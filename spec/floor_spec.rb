@@ -22,6 +22,24 @@ describe(Floor) do
     end
   end
 
+  # describe('#count_rooms') do
+  #   it("Counts the number of discrete groups of contigous empty cells on the map.") do
+  #     test_floor = Floor.new({:width => 10, :height => 10})
+  #     test_floor.create_boundaries()
+  #     expect(test_floor.count_rooms()).to(eq(1))
+  #   end
+  # end
+
+  describe('#count_rooms') do
+    it("Counts the number of discrete groups of contigous empty cells on the map.") do
+      test_floor = Floor.new({:width => 80, :height => 40})
+      test_floor.cellular_automata(3)
+       print("\n\nRoom Counter:\n\n")
+       test_floor.count_rooms()
+       print("\n")
+    end
+  end
+
   describe('#create_boundaries') do
     it("Creates walls around the edges of the map.") do
       test_floor = Floor.new({:width => 10, :height => 10})
@@ -38,11 +56,11 @@ describe(Floor) do
     it("Generates a series of caverns using cellular automata.") do
       test_floor = Floor.new({:width => 80, :height => 40})
       test_floor.cellular_automata(3)
-      if(PRINT_MAPS)
-       print("\n\nCellular Automata:\n\n")
-       test_floor.print_map()
-       print("\n")
-     end
+      # if(PRINT_MAPS)
+      #  print("\n\nCellular Automata:\n\n")
+      #  test_floor.print_map()
+      #  print("\n")
+      #  end
     end
   end
 
