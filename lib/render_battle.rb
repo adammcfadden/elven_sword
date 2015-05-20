@@ -51,12 +51,13 @@ class BattleWindow < Gosu::Window
   def attack
     @player_attack_sound.play
     @monster_attack_sound.play
-    #player.attack
+    #battle.attack(attacker,target)
     #return to attack
   end
 
   def flee
     @player_flee_sound.play
+    #battle.flee
     #return to map view
     #trigger damage?
   end
