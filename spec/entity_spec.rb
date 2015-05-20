@@ -11,8 +11,8 @@ describe Entity do
 
   describe '#damage' do
     it 'returns a damage roll for the entity' do
-      player = Entity.create(name: 'Dirge', level: 1, health: 100, location_x: 1, location_y: 1, pc?: true, alive?: true)
-      expect(player.damage).to eq(5)
+      player = Entity.create(name: 'Dirge', level: 1, str: 15, health: 100, location_x: 1, location_y: 1, pc?: true, alive?: true)
+      expect(player.damage).to eq(7)
     end
   end
 
@@ -34,14 +34,14 @@ describe Entity do
 
   describe '#take_damage' do
     it 'takes damage from an entity and subtracts the damage from remaning health' do
-      player = Entity.create(name: 'Dirge', level: 1, health: 100, location_x: 1, location_y: 1, pc?: true, alive?: true)
-      monster = Entity.create(name: 'Lina', level: 1, health: 100, location_x: 1, location_y: 1, pc?: false, alive?: true)
+      player = Entity.create(name: 'Dirge', level: 1, str: 20, health: 100, location_x: 1, location_y: 1, pc?: true, alive?: true)
+      monster = Entity.create(name: 'Lina', level: 1, str: 10, health: 100, location_x: 1, location_y: 1, pc?: false, alive?: true)
       player.take_damage(monster.damage)
       expect(player.health).to eq(95)
     end
 
     it 'checks if the entity is dead' do
-      player = Entity.create(name: 'Dirge', level: 1, health: 100, location_x: 1, location_y: 1, pc?: true, alive?: true)
+      player = Entity.create(name: 'Dirge', level: 1, str: 500, health: 100, location_x: 1, location_y: 1, pc?: true, alive?: true)
       monster = Entity.create(name: 'Lina', level: 1, health: 5, location_x: 1, location_y: 1, pc?: false, alive?: true)
       monster.take_damage(player.damage)
       expect(monster.alive?).to eq(false)

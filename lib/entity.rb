@@ -1,15 +1,6 @@
 class Entity < ActiveRecord::Base
-  belongs_to(:battle)
-  attr_accessor :location_x, :location_y, :player_drawn
-
-#   def initialize(window)
-# # not being used, could be useful later
-# #   @player_width = 16
-#     @window = window
-#     @location_x = 1
-#     @location_y = 1
-#     @player_drawn = false
-#   end
+  belongs_to :battle
+  has_and_belongs_to_many :weapons
 
   def entity_is_drawn
     self.update(entity_drawn?: true)
@@ -21,7 +12,7 @@ class Entity < ActiveRecord::Base
   end
 
   def damage
-    return 5
+    self.str * 5 / 10
   end
 
   def move_north
@@ -52,7 +43,7 @@ class Entity < ActiveRecord::Base
     health = self.health
     health -= damage
     self.update(health: health)
-    self.update(alive?: false) if health == 0
+    self.update(alive?: false) if health <= 0
   end
 
   def win_battle(xp_reward)
