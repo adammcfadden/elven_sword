@@ -15,7 +15,15 @@ describe Weapon do
       weapon.equip
       expect(weapon.isequipped?).to eq(true)
     end
-
   end
+
+    describe '#unequip' do
+      it 'switches the equipped flag to false' do
+        weapon = Weapon.generate_random('sword')
+        weapon.equip
+        weapon.unequip
+        expect(weapon.isequipped?).to eq(false)
+      end
+    end
 
 end
