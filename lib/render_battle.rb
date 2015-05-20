@@ -101,6 +101,3 @@ class BattleWindow < Gosu::Window
   # end
 
 end
-
-window = BattleWindow.new
-window.show
