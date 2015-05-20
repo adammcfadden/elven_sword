@@ -140,6 +140,18 @@ class Floor
     return {:enter => p_enter, :exit => p_exit}
   end
 
+  def get_room_size(rooms, room_number)
+    room_size = 0
+    @map.each_index() do |x|
+      @map[x].each_index() do |y|
+        if(rooms[x][y] == room_number)
+          room_size += 1
+        end
+      end
+    end
+    return room_size
+  end
+
   def get_chests(enter_and_exit, rooms)
     number_of_chests = 3
     chests = []
@@ -163,13 +175,15 @@ class Floor
           invalid_placement = true
         elsif(empty_neighbors(p_chest[:x], p_chest[:y], 1) != 9)
           invalid_placement = true
+        elsif(get_room_size(rooms, rooms[p_chest[:x]][p_chest[:y]]) > 75)
+          invalid_placement = true
         end
         chests.each() do |chest|
           if(rooms[p_chest[:x]][p_chest[:y]] == rooms[chest[:x]][chest[:y]])
             invalid_placement = true
           end
         end
-        if(invalid_count > 10000)
+        if(invalid_count > 100000)
           return chests
         end
       end
