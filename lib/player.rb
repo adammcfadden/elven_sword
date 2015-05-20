@@ -9,8 +9,8 @@ class Player
   end
 
   def randomize_coords
-    @x = Random.new.rand(1..BOARD_WIDTH)
-    @y = Random.new.rand(1..BOARD_HEIGHT)
+    @x = Random.new.rand(1..(BOARD_WIDTH-1))
+    @y = Random.new.rand(1..(BOARD_HEIGHT-1))
   end
 
   def draw_player

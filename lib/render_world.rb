@@ -2,32 +2,30 @@ require 'gosu'
 require './lib/floor'
 require './lib/player'
 
-BOARD_WIDTH = 80
+BOARD_WIDTH = 40
 BOARD_HEIGHT = 80
 TICKS_PER_STEP = 5
 
-class GameWindow < Gosu::Window
+class WorldWindow < Gosu::Window
   def initialize
-    super(1280, 1280, false) #map size
+    super(BOARD_WIDTH*16, BOARD_HEIGHT*16, false) #map size
     self.caption = "Render Map" #window title
     @floor_image = Gosu::Image.new(self, "./media/floor.png", false) # image tile 1
     @wall_image = Gosu::Image.new(self, "./media/wall.gif", false) # image tile 2
     @floor = Floor.new({:width => BOARD_WIDTH, :height => BOARD_HEIGHT}) # call toby's mapmaker
     @floor.fill_map(true)
-    steps = 40000
+    steps = 4000
     @floor.drunk_walk(steps ,false)
     @floor.create_boundaries
     @scaler = 16 #scales the size of the image tiles to account for image size
-    @countdown = 0
+    @countdown = 0 #is used in #update to control player speed
     @player = Player.new(self)
   end
 
-
-
-
   def draw
-    @floor.map.each_index do |y|
-      @floor.map[y].each_index do |x|
+    #draws map
+    @floor.map.each_index do |x|
+      @floor.map[x].each_index do |y|
         if(@floor.is_solid?(x, y))
           @wall_image.draw(x*@scaler, y*@scaler, 0)
         else
@@ -35,6 +33,7 @@ class GameWindow < Gosu::Window
         end
       end
     end
+    #draws player at random location that is not solid.
     until @player.player_drawn do
       unless @floor.is_solid?(@player.x, @player.y)
         @player.draw_player
@@ -83,6 +82,3 @@ class GameWindow < Gosu::Window
     end
   end
 end
-
-window = GameWindow.new
-window.show
