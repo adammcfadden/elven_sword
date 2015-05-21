@@ -66,16 +66,14 @@ class Entity < ActiveRecord::Base
     level += 1
     6.times do
       roll = rand(2)
-
       if roll == 0
         vit +=1
       elsif roll == 1
         str +=1
       end
-      self.update(level: level, xp: 0, vit: vit, str: str)
     end
-
+    max_health = vit * 10 + (level * 25)
+    self.update(level: level, xp: 0, vit: vit, str: str, health: max_health)
   end
-
 
 end
