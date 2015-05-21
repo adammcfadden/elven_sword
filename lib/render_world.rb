@@ -12,7 +12,7 @@ BOARD_WIDTH = 100
 BOARD_HEIGHT = 80
 TICKS_PER_STEP = 5
 DELAY = 30
-ENCOUNTER = 50 #lower for more encounters, higher for less
+ENCOUNTER = 100 #lower for more encounters, higher for less
 
 class WorldWindow < Gosu::Window
   def initialize
@@ -188,7 +188,7 @@ class WorldWindow < Gosu::Window
       if @player.xp != 0
         @player.level_up(6)
       end
-      if (button_down? Gosu::KbR) then #lets player exit a battle, new if statement should exit when flee, monster health 0, etc.
+      if (button_down? Gosu::KbT) then #lets player exit a battle, new if statement should exit when flee, monster health 0, etc.
         @screen = 'victory'
       end
     else
@@ -199,14 +199,14 @@ class WorldWindow < Gosu::Window
         if @countdown == 0
           @random_encounter_one = Random.new.rand(@step_counter..ENCOUNTER)
           @random_encounter_two = Random.new.rand(@step_counter..ENCOUNTER)
-        end
-        if @random_encounter_one == @random_encounter_two
-          @player.enter_battle
-          @screen = 'battle'
-          @step_counter = 0
-          @monster = Battle.random_monster  #should be in a method called on encounter
-          @monster_image = Gosu::Image.new(self, "#{@monster.image_path}", false)
-          @battle = Battle.new(name: 'Battle!', boss?: false, active?: true)  #should be in a method called on encounter
+          if @random_encounter_one == @random_encounter_two
+            @step_counter = 0
+            @player.enter_battle
+            @monster = Battle.random_monster  #should be in a method called on encounter
+            @monster_image = Gosu::Image.new(self, "#{@monster.image_path}", false)
+            @battle = Battle.new(name: 'Battle!', boss?: false, active?: true)  #should be in a method called on encounter
+            @screen = 'battle'
+          end
         end
         unless @floor.is_solid?((@player.location_x - 1), @player.location_y)
           if @countdown == 0
@@ -220,14 +220,14 @@ class WorldWindow < Gosu::Window
         if @countdown == 0
           @random_encounter_one = Random.new.rand(@step_counter..ENCOUNTER)
           @random_encounter_two = Random.new.rand(@step_counter..ENCOUNTER)
-        end
-        if @random_encounter_one == @random_encounter_two
-          @player.enter_battle
-          @screen = 'battle'
-          @step_counter = 0
-          @monster = Battle.random_monster  #should be in a method called on encounter
-          @monster_image = Gosu::Image.new(self, "#{@monster.image_path}", false)
-          @battle = Battle.new(name: 'Battle!', boss?: false, active?: true)  #should be in a method called on encounter
+          if @random_encounter_one == @random_encounter_two
+            @step_counter = 0
+            @player.enter_battle
+            @monster = Battle.random_monster  #should be in a method called on encounter
+            @monster_image = Gosu::Image.new(self, "#{@monster.image_path}", false)
+            @battle = Battle.new(name: 'Battle!', boss?: false, active?: true)  #should be in a method called on encounter
+            @screen = 'battle'
+          end
         end
         unless @floor.is_solid?((@player.location_x + 1), @player.location_y)
           if @countdown == 0
@@ -241,14 +241,14 @@ class WorldWindow < Gosu::Window
         if @countdown == 0
           @random_encounter_one = Random.new.rand(@step_counter..ENCOUNTER)
           @random_encounter_two = Random.new.rand(@step_counter..ENCOUNTER)
-        end
-        if @random_encounter_one == @random_encounter_two
-          @player.enter_battle
-          @screen = 'battle'
-          @step_counter = 0
-          @monster = Battle.random_monster  #should be in a method called on encounter
-          @monster_image = Gosu::Image.new(self, "#{@monster.image_path}", false)
-          @battle = Battle.new(name: 'Battle!', boss?: false, active?: true)  #should be in a method called on encounter
+          if @random_encounter_one == @random_encounter_two
+            @step_counter = 0
+            @player.enter_battle
+            @monster = Battle.random_monster  #should be in a method called on encounter
+            @monster_image = Gosu::Image.new(self, "#{@monster.image_path}", false)
+            @battle = Battle.new(name: 'Battle!', boss?: false, active?: true)  #should be in a method called on encounter
+            @screen = 'battle'
+          end
         end
         unless @floor.is_solid?(@player.location_x, @player.location_y - 1)
           if @countdown == 0
@@ -262,14 +262,14 @@ class WorldWindow < Gosu::Window
         if @countdown == 0
           @random_encounter_one = Random.new.rand(@step_counter..ENCOUNTER)
           @random_encounter_two = Random.new.rand(@step_counter..ENCOUNTER)
-        end
-        if @random_encounter_one == @random_encounter_two
-          @player.enter_battle
-          @screen = 'battle'
-          @step_counter = 0
-          @monster = Battle.random_monster  #should be in a method called on encounter
-          @monster_image = Gosu::Image.new(self, "#{@monster.image_path}", false)
-          @battle = Battle.new(name: 'Battle!', boss?: false, active?: true)  #should be in a method called on encounter
+          if @random_encounter_one == @random_encounter_two
+            @step_counter = 0
+            @player.enter_battle
+            @monster = Battle.random_monster  #should be in a method called on encounter
+            @monster_image = Gosu::Image.new(self, "#{@monster.image_path}", false)
+            @battle = Battle.new(name: 'Battle!', boss?: false, active?: true)  #should be in a method called on encounter
+            @screen = 'battle'
+          end
         end
         unless @floor.is_solid?(@player.location_x, @player.location_y + 1)
           if @countdown == 0
