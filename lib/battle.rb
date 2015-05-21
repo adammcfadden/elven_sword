@@ -4,7 +4,7 @@ class Battle < ActiveRecord::Base
 
   def self.random_monster
     roll = Random.new
-    monster_roll = rand(7)
+    monster_roll = rand(18)
 
     weapon_category = nil
 
