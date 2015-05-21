@@ -37,7 +37,6 @@ class BattleWindow < Gosu::Window
     @monster.weapons.push(@weapon_2)
     @battle = Battle.create(name: 'Battle!', boss?: false, active?: true)
     # @battle.fetch_entities
-  end
 
     @player_pre_health = @player_post_health = @player.health
     @monster_pre_health = @monster_post_health = @player.health
@@ -63,7 +62,7 @@ class BattleWindow < Gosu::Window
     if @countdown/60 > 0
       @font.draw("Chill #{@countdown/60} second(s)", 600, 950, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
     end
-
+  
 
 #write damage-made indicator routine, possibly in place of delay indicator
 # these are HACKS, we need a battle damage return value I can use
