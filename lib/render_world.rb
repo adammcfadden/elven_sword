@@ -6,32 +6,38 @@ require './lib/battle'
 require './lib/weapon'
 require 'pry'
 
-WIDTH = 1600
-HEIGHT = 1280
-BOARD_WIDTH = 100
-BOARD_HEIGHT = 80
+WIDTH = 1920
+HEIGHT = 1080
+BOARD_WIDTH = 120
+BOARD_HEIGHT = 67
 TICKS_PER_STEP = 5
 DELAY = 30
-ENCOUNTER = 100 #lower for more encounters, higher for less
+ENCOUNTER = 150 #lower for more encounters, higher for less
+BOSS_LEVEL = 10
 
 class WorldWindow < Gosu::Window
   def initialize
+### constants that will not change###
     super(BOARD_WIDTH*16, BOARD_HEIGHT*16, false) #map size
     self.caption = "Elven Sword!" #window title
-    @floor_image = Gosu::Image.new(self, "./media/floor.png", false) # image tile 1
-    @wall_image = Gosu::Image.new(self, "./media/wall.gif", false) # image tile 2
-    @player_image = Gosu::Image.new(self, "./media/baby_fox_mccloud.jpg", false) # image tile 1
-    @vs_image = Gosu::Image.new(self, "./media/vs.png", false)
-    @monster_image = Gosu::Image.new(self, "./media/baby_gojira.png", false) # image tile 2
+    @exit_image = Gosu::Image.new(self, "./media/two.png", false) # exit tile 1
+    @floor_image = Gosu::Image.new(self, "./media/grass_tile.png", false) # image tile 1
+    @wall_image = Gosu::Image.new(self, "./media/stump_tile.png", false) # image tile 2
+    @player_image = Gosu::Image.new(self, "./media/player.png", false) # image tile 1
     @player_attack_sound = Gosu::Sample.new(self, "media/fox_taunt.wav")
     @monster_attack_sound = Gosu::Sample.new(self, "media/godzilla_roars.wav")
     @player_flee_sound = Gosu::Sample.new(self, "media/fox_flee.wav")
-    @font = Gosu::Font.new(self, "Arial", 18)
-    @floor = Floor.new({:width => BOARD_WIDTH, :height => BOARD_HEIGHT}) # call toby's mapmaker
-    @floor.rogue_style
+    @font = Gosu::Font.new(self, "Arial", 24)
     @scaler = 16 #scales the size of the image tiles to account for image size
     @countdown = 0 #is used in #update to control player speed
-    @player = Entity.create(name: 'Dirge', vit: 10, in_battle?: false, str: 100, level: 1, xp: 0, health: 125,  location_x: 1, location_y: 1, pc?: true, image_path: 'media/fox.png', alive?: true, entity_drawn?: false)
+    @level_counter = 1
+###world/player generation###
+    @floor = Floor.new({:width => BOARD_WIDTH, :height => BOARD_HEIGHT}) # call toby's mapmaker
+    @floor.generate_map
+    entrance_and_exit = @floor.get_entrance_and_exit
+    @entrance = entrance_and_exit.fetch(:enter)
+    @exit = entrance_and_exit.fetch(:exit)
+    @player = Entity.create(name: 'Dirge', vit: 10, in_battle?: false, str: 15, level: 1, xp: 0, health: 125,  location_x: @entrance.fetch(:x), location_y: @entrance.fetch(:y), pc?: true, image_path: 'media/player_tile.png', alive?: true, entity_drawn?: false)
     @weapon = Weapon.generate_random('dagger')
     @player.weapons.push(@weapon)
     @player_equipped_weapon = @player.weapons.first
@@ -44,61 +50,50 @@ class WorldWindow < Gosu::Window
   def draw
 
 ##### BATTLE #####
-
     if @screen == 'battle'
-      draw_quad(1, 1, 0xffffffff, WIDTH, 1, 0xffffffff, WIDTH, HEIGHT, 0xffff0000, 1, HEIGHT, 0xffff0000, 0)
-      @player_image.draw(150, 150, 1, scale_x = 0.75, scale_y = 0.75)
-      @vs_image.draw(750, 300, 1)
-      @monster_image.draw(1050, 175, 1, scale_x = 1.25, scale_y = 1.25)
-      @font.draw("NAME: #{@player.name}", 150, 800, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
-      @font.draw("HEALTH: #{@player.health}", 200, 850, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
-      @font.draw("  LEVEL: #{@player.level}", 200, 900, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
-      @font.draw("     XP: #{@player.xp}", 200, 950, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
+### background ###
+      draw_quad(1, 1, 0xff_000000, WIDTH, 1, 0xff_000000, WIDTH, HEIGHT, 0xff_000000, 1, HEIGHT, 0xff_000000, 0)
+### player image ###
+      @player_image.draw(20, 20, 1, scale_x = 1, scale_y = 1)
+### vs slash ###
+      draw_line(0, HEIGHT, 0xff_ff0000, WIDTH, 0, 0xff_ff0000, z = 1, mode = :default)
+      draw_quad(WIDTH/2 - 262, HEIGHT/2 - 150, 0xff_000000, WIDTH/2 + 210, HEIGHT/2 - 150, 0xff_000000, WIDTH/2 - 262, HEIGHT/2 + 150, 0xff_000000, WIDTH/2 + 210, HEIGHT/2 + 150, 0xff_000000, 2)
+      @font.draw("VS", WIDTH/2 - 70, HEIGHT/2 - 15, 3, scale_x = 3, scale_y = 3, color = 0xff_ff0000)
+      #@vs_image.draw(750, 300, 1)
+### monster image ###
+      @monster_image.draw(1400, 600, 1, scale_x = 1, scale_y = 1)
+### player info box ###
+      @font.draw("Name: #{@player.name}", 650, 60, 2, scale_x = 1, scale_y = 1, color = 0xff_ffffff)
+      @font.draw("Level: #{@player.level}", 650, 80, 2, scale_x = 1, scale_y = 1, color = 0xff_ffffff)
+      @font.draw("Health: #{@player.health}/#{@player.get_max_health}", 650, 100, 2, scale_x = 1, scale_y = 1, color = 0xff_ffffff)
+      @font.draw("Xp: #{@player.xp}/#{@player.level * 100}", 650, 120, 2, scale_x = 1, scale_y = 1, color = 0xff_ffffff)
       if @player.weapons.first #player weapon
-        @font.draw("WEAPON: #{@player_equipped_weapon.name}", 200, 1000, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
+        @font.draw("Weapon: #{@player_equipped_weapon.name}", 650, 140, 2, scale_x = 1, scale_y = 1, color = 0xff_ffffff)
       else
-        @font.draw("WEAPON: None", 200, 1000, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
+        @font.draw("Weapon: None", 650, 140, 2, scale_x = 1, scale_y = 1, color = 0xff_ffffff)
       end
+### monster info box ###
+      @font.draw("Name: #{@monster.name}", 1015, 900, 2, scale_x = 1, scale_y = 1, color = 0xff_ffffff)
+      @font.draw("Health: #{@monster.health}/#{@monster.get_max_health}", 1015, 920, 2, scale_x = 1, scale_y = 1, color = 0xff_ffffff)
+      @font.draw("Level: #{@monster.level}", 1015, 940, 2, scale_x = 1, scale_y = 1, color = 0xff_ffffff)
+      @font.draw("Xp: #{@monster.xp}", 1015, 960, 2, scale_x = 1, scale_y = 1, color = 0xff_ffffff)
       if @monster.weapons.first #monster weapon
-        @font.draw("WEAPON: #{@monster.weapons.last.name}", 1100, 1000, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
+        @font.draw("Weapon: #{@monster.weapons.last.name}", 1015, 980, 2, scale_x = 1, scale_y = 1, color = 0xff_ffffff)
       else
-        @font.draw("WEAPON: None", 1100, 1000, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
+        @font.draw("Weapon: None", 1015, 980, 2, scale_x = 1, scale_y = 1, color = 0xff_ffffff)
       end
-      @font.draw("NAME: #{@monster.name}", 1050, 800, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
-      @font.draw("HEALTH: #{@monster.health}", 1100, 850, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
-      @font.draw("  LEVEL: #{@monster.level}", 1100, 900, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
-      @font.draw("     XP: #{@monster.xp}", 1100, 950, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
+### notifications ###
       if @countdown/60 > 0
         @font.draw("Chill #{@countdown/60} second(s)", 600, 950, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
       end
       if @player_damage >= 0
-        @font.draw("MONSTER ATTACKED FOR: #{@player_damage} DAMAGE", 450, 700, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
+        @font.draw("#{@monster.name} dealt: #{@player_damage} damage", WIDTH/2 - 140, HEIGHT/2 + 55, 2, scale_x = 1, scale_y = 1, color = 0xff_ffffff)
       end
       if @monster_damage >= 0
-        @font.draw("PLAYER ATTACKED FOR: #{@monster_damage} DAMAGE", 450, 750, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
+        @font.draw("#{@player.name} dealt: #{@monster_damage} damage", WIDTH/2 - 140, HEIGHT/2 - 45, 2, scale_x = 1, scale_y = 1, color = 0xff_ffffff)
       end
-      if @monster.alive? && @player.alive?
-        @font.draw("ALIVE", 250, 1050, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
-        @font.draw("ALIVE", 1150, 1050, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
-      end
-      if !(@monster.alive?) && !(@player.alive?)
-        @font.draw("Mutually Assured Destruction, Baby!", 450, 650, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
-        @font.draw("DEAD", 250, 1050, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
-        @font.draw("DEAD", 1150, 1050, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
-      end
-      if !(@monster.alive?) && @player.alive?
-        @font.draw("Total Monster DESTRUCTION!", 450, 650, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
-        @font.draw("ALIVE", 250, 1050, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
-        @font.draw("DEAD", 1150, 1050, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
-      end
-      if !(@player.alive?) && @monster.alive?
-        @font.draw("Adieu, mon ami!", 600, 625, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
-        @font.draw("You have died.", 600, 725, 2, scale_x = 2, scale_y = 3, color = 0xff_ffffff)
-        @font.draw("DEAD", 250, 1050, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
-        @font.draw("ALIVE", 1150, 1050, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
-      end
-      @font.draw(" (A)TTACK!", 150, 1150, 2, scale_x = 5, scale_y = 5, color = 0xff_ffffff)
-      @font.draw(" (F)LEE!", 1075, 1150, 2, scale_x = 5, scale_y = 5, color = 0xff_ffffff)
+      @font.draw("A - Attack!", 20, 600, 2, scale_x = 1.5, scale_y = 1.5, color = 0xff_ffffff)
+      @font.draw("F - Flee!", 20, 650, 2, scale_x = 1.5, scale_y = 1.5, color = 0xff_ffffff)
 
 ##### VICTORY #####
 
@@ -111,7 +106,7 @@ class WorldWindow < Gosu::Window
         @font.draw("Category: #{@monster.weapons.first.category}", 450, 400, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
         @font.draw("Damage: #{@monster.weapons.first.min_power} - #{@monster.weapons.first.max_power}", 450, 500, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
       end
-      draw_quad(1, 1, 0xffffffff, WIDTH, 1, 0xffffffff, WIDTH, HEIGHT, 0xffff0000, 1, HEIGHT, 0xffff0000, 0)
+      draw_quad(1, 1, 0xff_808080, WIDTH, 1, 0xff_808080, WIDTH, HEIGHT, 0xff_808080, 1, HEIGHT, 0xff_808080, 0)
       @font.draw("(R)eturn to World", 450, 700, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
 
 ##### LEVEL_UP #####
@@ -123,14 +118,15 @@ class WorldWindow < Gosu::Window
 ##### WORLD #####
 
     else
-      #HUD
-      @font.draw("Level: #{@player.level}", 10, 10, 2, scale_x = 0.90, scale_y = 0.90, color = 0xff_ffffff)
-      @font.draw("Health: #{@player.health}", 10, 25, 2, scale_x = 0.90, scale_y = 0.90, color = 0xff_ffffff)
+###HUD###
+      draw_quad(0, 0, 0x90_000000, 200, 0, 0x90_000000, 0, 90, 0x90_000000, 200, 90, 0x90_000000, 1)
+      @font.draw("Player Level: #{@player.level}", 10, 10, 2, scale_x = 0.80, scale_y = 0.80, color = 0xff_ffffff)
+      @font.draw("Health: #{@player.health}", 10, 25, 2, scale_x = 0.80, scale_y = 0.80, color = 0xff_ffffff)
       if @player_equipped_weapon
-        @font.draw("Weapon: #{@player_equipped_weapon.name} - #{@player_equipped_weapon.min_power}-#{@player_equipped_weapon.max_power}", 10, 40, 2, scale_x = 0.90, scale_y = 0.90, color = 0xff_ffffff)
+        @font.draw("Weapon: #{@player_equipped_weapon.name} - #{@player_equipped_weapon.min_power}-#{@player_equipped_weapon.max_power}", 10, 40, 2, scale_x = 0.80, scale_y = 0.80, color = 0xff_ffffff)
       end
-      #@font.draw("Encounter Chance: #{}", 450, 100, 2, scale_x = 0.75, scale_y = 0.75, color = 0xff_ffffff)
-      #draws map
+      @font.draw("Level: #{@level_counter}", 10, 70, 2, scale_x = 0.85, scale_y = 0.85, color = 0xff_ffffff)
+###draws map
       @floor.map.each_index do |x|
         @floor.map[x].each_index do |y|
           if(@floor.is_solid?(x, y))
@@ -140,16 +136,12 @@ class WorldWindow < Gosu::Window
           end
         end
       end
-      #draws player at random location that is not solid.
-      until @player.entity_drawn? do
-        unless @floor.is_solid?(@player.location_x, @player.location_y)
-          @player.entity_is_drawn
-        else
-          @player.randomize_coords
-        end
-      end
+###draws player at entrance
       @entity_image.draw(@player.location_x*16, @player.location_y*16, 1)
+###draws exit image
+      @exit_image.draw(@exit.fetch(:x)*@scaler, @exit.fetch(:y)*@scaler, 1)
     end
+
 
   def update
 
@@ -162,17 +154,13 @@ class WorldWindow < Gosu::Window
       if (button_down? Gosu::KbA) && @player.in_battle? && @monster.alive? && @player.alive? then
         if @countdown == 0
            @countdown = DELAY
-           @monster_attack_sound.play
-           #@player_pre_health = @player.health
-           #@monster_pre_health = @monster.health
+           #@monster_attack_sound.play
            @monster_damage = @battle.attack(@player, @monster)
            @player_damage = @battle.attack(@monster, @player)
-           #@player_post_health = @player.health
-           #@monster_post_health = @monster.health
         end
       end
       if (button_down? Gosu::KbF) && @battle.active? then
-         @player_flee_sound.play
+         #@player_flee_sound.play
          @countdown = DELAY
          @player.flee
       end
@@ -219,13 +207,32 @@ class WorldWindow < Gosu::Window
       if @player.xp != 0
         @player.level_up(6)
       end
-
-##### VICTORY #####
-
       if (button_down? Gosu::KbT) then #
         @screen = 'victory'
       end
+
+##### WORLD #####
     else
+      if @player.location_y == @exit.fetch(:y) && @player.location_x == @exit.fetch(:x)
+        @floor = Floor.new({:width => BOARD_WIDTH, :height => BOARD_HEIGHT}) # call toby's mapmaker
+        @level_counter += 1
+        if @level_counter > BOSS_LEVEL - 1
+          @floor.rogue_style
+          @floor_image = Gosu::Image.new(self, "./media/grass_tile.png", false) # image tile 1
+          @wall_image = Gosu::Image.new(self, "./media/wall.gif", false) # image tile 2
+        elsif @level_counter == BOSS_LEVEL
+          @monster = Battle.random_boss
+          @monster_image = Gosu::Image.new(self, "#{@monster.image_path}", false)
+          @battle = Battle.new(name: 'Battle!', boss?: false, active?: true)
+          @screen = 'battle'
+        else
+          @floor.generate_map
+        end
+        entrance_and_exit = @floor.get_entrance_and_exit
+        @entrance = entrance_and_exit.fetch(:enter)
+        @exit = entrance_and_exit.fetch(:exit)
+        @player.update(location_x: @entrance.fetch(:x), location_y: @entrance.fetch(:y))
+      end
       if @countdown > 0 then
          @countdown -= 1
       end
