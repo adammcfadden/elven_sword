@@ -205,6 +205,7 @@ class WorldWindow < Gosu::Window
           @screen = 'battle'
           @step_counter = 0
           @monster = Battle.random_monster  #should be in a method called on encounter
+          @monster_image = Gosu::Image.new(self, "#{@monster.image_path}", false)
           @battle = Battle.new(name: 'Battle!', boss?: false, active?: true)  #should be in a method called on encounter
         end
         unless @floor.is_solid?((@player.location_x - 1), @player.location_y)
@@ -225,6 +226,7 @@ class WorldWindow < Gosu::Window
           @screen = 'battle'
           @step_counter = 0
           @monster = Battle.random_monster  #should be in a method called on encounter
+          @monster_image = Gosu::Image.new(self, "#{@monster.image_path}", false)
           @battle = Battle.new(name: 'Battle!', boss?: false, active?: true)  #should be in a method called on encounter
         end
         unless @floor.is_solid?((@player.location_x + 1), @player.location_y)
@@ -245,6 +247,7 @@ class WorldWindow < Gosu::Window
           @screen = 'battle'
           @step_counter = 0
           @monster = Battle.random_monster  #should be in a method called on encounter
+          @monster_image = Gosu::Image.new(self, "#{@monster.image_path}", false)
           @battle = Battle.new(name: 'Battle!', boss?: false, active?: true)  #should be in a method called on encounter
         end
         unless @floor.is_solid?(@player.location_x, @player.location_y - 1)
@@ -265,6 +268,7 @@ class WorldWindow < Gosu::Window
           @screen = 'battle'
           @step_counter = 0
           @monster = Battle.random_monster  #should be in a method called on encounter
+          @monster_image = Gosu::Image.new(self, "#{@monster.image_path}", false)
           @battle = Battle.new(name: 'Battle!', boss?: false, active?: true)  #should be in a method called on encounter
         end
         unless @floor.is_solid?(@player.location_x, @player.location_y + 1)
