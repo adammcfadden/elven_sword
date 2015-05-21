@@ -46,9 +46,12 @@ class WorldWindow < Gosu::Window
     @player_damage = -1
     @monster_damage = -1
     @monster_1 = Battle.random_monster
-    unless @floor.is_solid?(@monster_1.location_x, @monster_1.location_y + 1)
-      @monster_1.move_south
-    end
+    until @player.entity_drawn? do
+      unless @floor.is_solid?(@player.location_x, @player.location_y)
+        @player.entity_is_drawn
+      else
+        @player.randomize_coords
+      end
     end
 
   end
