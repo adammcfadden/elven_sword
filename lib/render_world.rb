@@ -31,7 +31,7 @@ class WorldWindow < Gosu::Window
     @floor.rogue_style
     @scaler = 16 #scales the size of the image tiles to account for image size
     @countdown = 0 #is used in #update to control player speed
-    @player = Entity.create(name: 'Dirge', in_battle?: false, str: 15, level: 1, xp: 0, health: 100,  location_x: 1, location_y: 1, pc?: true, image_path: 'media/fox.png', alive?: true, entity_drawn?: false)
+    @player = Entity.create(name: 'Dirge', vit: 10, in_battle?: false, str: 15, level: 1, xp: 0, health: 125,  location_x: 1, location_y: 1, pc?: true, image_path: 'media/fox.png', alive?: true, entity_drawn?: false)
     @weapon = Weapon.generate_random('sword')
     @player.weapons.push(@weapon)
     @entity_image = Gosu::Image.new(self, "#{@player.image_path}", false)
@@ -51,20 +51,20 @@ class WorldWindow < Gosu::Window
       @font.draw("HEALTH: #{@player.health}", 200, 850, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
       @font.draw("  LEVEL: #{@player.level}", 200, 900, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
       @font.draw("     XP: #{@player.xp}", 200, 950, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
-      if @player.weapons.first
+      if @player.weapons.first #player weapon
         @font.draw("WEAPON: #{@player.weapons.first.name}", 200, 1000, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
       else
         @font.draw("WEAPON: None", 200, 1000, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
+      end
+      if @monster.weapons.first #monster weapon
+        @font.draw("WEAPON: #{@monster.weapons.first.name}", 1100, 1000, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
+      else
+        @font.draw("WEAPON: None", 1100, 1000, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
       end
       @font.draw("NAME: #{@monster.name}", 1050, 800, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
       @font.draw("HEALTH: #{@monster.health}", 1100, 850, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
       @font.draw("  LEVEL: #{@monster.level}", 1100, 900, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
       @font.draw("     XP: #{@monster.xp}", 1100, 950, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
-      if @monster.weapons.first
-        @font.draw("WEAPON: #{@monster.weapons.first.name}", 1100, 1000, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
-      else
-        @font.draw("WEAPON: none", 1100, 1000, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
-      end
       if @countdown/60 > 0
         @font.draw("Chill #{@countdown/60} second(s)", 600, 950, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
       end
@@ -99,11 +99,16 @@ class WorldWindow < Gosu::Window
     elsif @screen == 'victory'
       #victory screen player health. equipable loot, weapon stats. your weapon stats.
       @font.draw("PLayer Health: #{@player.health}", 450, 100, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
-      @font.draw("Monster Weapon: #{@monster.weapons.first.name}", 450, 300, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
-      @font.draw("Category: #{@monster.weapons.first.category}", 450, 400, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
-      @font.draw("Damage: #{@monster.weapons.first.min_power} - #{@monster.weapons.first.max_power}", 450, 500, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
+      if @monster.weapons.first #monster weapon
+        @font.draw("Monster Weapon: #{@monster.weapons.first.name}", 450, 300, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
+        @font.draw("Category: #{@monster.weapons.first.category}", 450, 400, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
+        @font.draw("Damage: #{@monster.weapons.first.min_power} - #{@monster.weapons.first.max_power}", 450, 500, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
+      end
       draw_quad(1, 1, 0xffffffff, WIDTH, 1, 0xffffffff, WIDTH, HEIGHT, 0xffff0000, 1, HEIGHT, 0xffff0000, 0)
       @font.draw("(R)eturn to World", 450, 700, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
+    elsif @screen == 'level_up'
+      @font.draw("PLayer Health: #{@player.health}", 450, 100, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
+      @font.draw("PLayer Strength: #{@player.str}", 450, 200, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
     else
       #HUD
       @font.draw("Level: #{@player.level}", 10, 10, 2, scale_x = 0.90, scale_y = 0.90, color = 0xff_ffffff)
@@ -160,7 +165,13 @@ class WorldWindow < Gosu::Window
         @screen = 'flee' #flee screen shows dmg taken, and then press "key" to return to world
       end
       if @monster.alive? == false && @player.alive?
-        @screen = 'victory' #victory screen dmg done to player/monster. equipable loot, weapon stats. your weapon stats.
+        player_xp = @player.xp + @monster.level * 25
+        @player.update(xp: player_xp)
+        if @player.xp >= @player.level * 100
+          @screen = 'level_up'
+        else
+          @screen = 'victory' #victory screen dmg done to player/monster. equipable loot, weapon stats. your weapon stats.
+        end
       end
       if @player.alive? == false
         @screen = 'game_over' #game over screen.
@@ -172,6 +183,13 @@ class WorldWindow < Gosu::Window
     elsif @screen == 'victory'
       if (button_down? Gosu::KbR) then #lets player exit a battle, new if statement should exit when flee, monster health 0, etc.
         @screen = 'world'
+      end
+    elsif @screen == 'level_up'
+      if @player.xp != 0
+        @player.level_up(6)
+      end
+      if (button_down? Gosu::KbR) then #lets player exit a battle, new if statement should exit when flee, monster health 0, etc.
+        @screen = 'victory'
       end
     else
       if @countdown > 0 then
@@ -187,8 +205,6 @@ class WorldWindow < Gosu::Window
           @screen = 'battle'
           @step_counter = 0
           @monster = Battle.random_monster  #should be in a method called on encounter
-          @weapon = Weapon.generate_random('sword')
-          @monster.weapons.push(@weapon)
           @battle = Battle.new(name: 'Battle!', boss?: false, active?: true)  #should be in a method called on encounter
         end
         unless @floor.is_solid?((@player.location_x - 1), @player.location_y)
