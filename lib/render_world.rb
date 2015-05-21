@@ -12,7 +12,7 @@ BOARD_WIDTH = 120
 BOARD_HEIGHT = 67
 TICKS_PER_STEP = 5
 DELAY = 30
-ENCOUNTER = 200 #lower for more encounters, higher for less
+ENCOUNTER = 150 #lower for more encounters, higher for less
 BOSS_LEVEL = 10
 
 class WorldWindow < Gosu::Window
