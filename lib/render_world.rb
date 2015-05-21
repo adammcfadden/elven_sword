@@ -35,6 +35,8 @@ class WorldWindow < Gosu::Window
     @entity_image = Gosu::Image.new(self, "#{@player.image_path}", false)
     @step_counter = 0
     @in_battle = 'no'
+    @player_damage = -1
+    @monster_damage = -1
   end
 
 
@@ -57,29 +59,29 @@ class WorldWindow < Gosu::Window
       if @countdown/60 > 0
         @font.draw("Chill #{@countdown/60} second(s)", 600, 950, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
       end
-      if @player_pre_health != @player_post_health
-        @font.draw("PLAYER DAMAGE RECEIVED: #{@player_pre_health-@player_post_health}", 450, 700, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
+      if @player_damage >= 0
+        @font.draw("MONSTER ATTACKED FOR: #{@player_damage} DAMAGE", 450, 700, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
       end
-      if @monster_pre_health != @monster_post_health
-        @font.draw("MONSTER DAMAGE RECEIVED: #{@monster_pre_health-@monster_post_health}", 450, 750, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
+      if @monster_damage >= 0
+        @font.draw("PLAYER ATTACKED FOR: #{@monster_damage} DAMAGE", 450, 750, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
       end
       if @monster.alive? && @player.alive?
         @font.draw("ALIVE", 250, 1050, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
         @font.draw("ALIVE", 1150, 1050, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
       end
       if !(@monster.alive?) && !(@player.alive?)
-        @font.draw("Mutually Assured Destruction, Baby!", 450, 700, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
+        @font.draw("Mutually Assured Destruction, Baby!", 450, 650, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
         @font.draw("DEAD", 250, 1050, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
         @font.draw("DEAD", 1150, 1050, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
       end
       if !(@monster.alive?) && @player.alive?
-        @font.draw("Total Monster DESTRUCTION!", 450, 700, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
+        @font.draw("Total Monster DESTRUCTION!", 450, 650, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
         @font.draw("ALIVE", 250, 1050, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
         @font.draw("DEAD", 1150, 1050, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
       end
       if !(@player.alive?) && @monster.alive?
-        @font.draw("Adieu, mon ami!", 600, 675, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
-        @font.draw("As vee zay in France, don' layt yo petite frog-legs gayt zo cloze to zee butterr.", 225, 725, 2, scale_x = 2, scale_y = 3, color = 0xff_ffffff)
+        @font.draw("Adieu, mon ami!", 600, 625, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
+        @font.draw("You have died.", 600, 725, 2, scale_x = 2, scale_y = 3, color = 0xff_ffffff)
         @font.draw("DEAD", 250, 1050, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
         @font.draw("ALIVE", 1150, 1050, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
       end
@@ -115,12 +117,12 @@ class WorldWindow < Gosu::Window
         if @countdown == 0
            @countdown = DELAY
            @monster_attack_sound.play
-           @player_pre_health = @player.health
-           @monster_pre_health = @monster.health
-           @battle.attack(@player, @monster)
-           @battle.attack(@monster, @player)
-           @player_post_health = @player.health
-           @monster_post_health = @monster.health
+           #@player_pre_health = @player.health
+           #@monster_pre_health = @monster.health
+           @monster_damage = @battle.attack(@player, @monster)
+           @player_damage = @battle.attack(@monster, @player)
+           #@player_post_health = @player.health
+           #@monster_post_health = @monster.health
         end
       end
       if (button_down? Gosu::KbF) && @battle.active? then
