@@ -84,4 +84,11 @@ class Entity < ActiveRecord::Base
     return max_health
   end
 
+  def flee
+    self.update(in_battle?: false)
+  end
+
+  def enter_battle
+    self.update(in_battle?: true)
+  end
 end
