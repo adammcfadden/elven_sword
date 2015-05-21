@@ -20,8 +20,10 @@ class WorldWindow < Gosu::Window
     @floor.generate_map
     @scaler = 16 #scales the size of the image tiles to account for image size
     @countdown = 0 #is used in #update to control player speed
-    @player = Entity.create(name: 'Dirge',str: 15, level: 1, xp: 0, health: 100,  location_x: 1, location_y: 1, pc?: true, image_path: 'media/fox.png', alive?: true, entity_drawn?: false)
+    @player = Entity.create(name: 'Dirge', str: 15, level: 1, xp: 0, health: 100,  location_x: 1, location_y: 1, pc?: true, image_path: 'media/fox.png', alive?: true, entity_drawn?: false)
     @entity_image = Gosu::Image.new(self, "#{@player.image_path}", false)
+    @event_counter = 0
+    @random_encounter = 15
   end
 
   def draw
@@ -47,13 +49,23 @@ class WorldWindow < Gosu::Window
   end
 
   def update
+
+    if @event_counter >= @random_encounter
+      @player.update(in_battle?: true)
+      battle_window = BattleWindow.new(@player.id)
+      battle_window.show
+      return
+    end
+
     if @countdown > 0 then
       @countdown -= 1
     end
+
     if button_down? Gosu::KbLeft then
       unless @floor.is_solid?((@player.location_x - 1), @player.location_y)
         if @countdown == 0
           @countdown = TICKS_PER_STEP
+          @event_counter += 1
           @player.move_west
         end
       end
@@ -63,6 +75,7 @@ class WorldWindow < Gosu::Window
         if @countdown == 0
           @countdown = TICKS_PER_STEP
           @player.move_east
+          @event_counter += 1
         end
       end
     end
@@ -71,6 +84,7 @@ class WorldWindow < Gosu::Window
         if @countdown == 0
           @countdown = TICKS_PER_STEP
           @player.move_north
+          @event_counter += 1
         end
       end
     end
@@ -79,6 +93,7 @@ class WorldWindow < Gosu::Window
         if @countdown == 0
           @countdown = TICKS_PER_STEP
           @player.move_south
+          @event_counter += 1
         end
       end
     end

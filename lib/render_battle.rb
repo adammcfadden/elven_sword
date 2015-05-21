@@ -15,6 +15,7 @@ class BattleWindow < Gosu::Window
   def initialize(player_id)
     super(WIDTH, HEIGHT, false) #map size
     self.caption = "Fight!" #window title
+    @player = Entity.find(player_id)
     @player_image = Gosu::Image.new(self, "./media/baby_fox_mccloud.jpg", false) # image tile 1
     @vs_image = Gosu::Image.new(self, "./media/vs.png", false)
     # @flee_image = Gosu::Image.new(self, "./media/fox_runs.gif", false)
@@ -36,6 +37,7 @@ class BattleWindow < Gosu::Window
     @monster.weapons.push(@weapon_2)
     @battle = Battle.create(name: 'Battle!', boss?: false, active?: true)
     # @battle.fetch_entities
+  end
 
     @player_pre_health = @player_post_health = @player.health
     @monster_pre_health = @monster_post_health = @player.health
