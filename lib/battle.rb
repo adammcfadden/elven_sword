@@ -4,7 +4,7 @@ class Battle < ActiveRecord::Base
 
   def self.random_monster
     roll = Random.new
-    monster_roll = rand(7)
+    monster_roll = rand(18)
 
     weapon_category = nil
 
@@ -25,7 +25,7 @@ class Battle < ActiveRecord::Base
       name = 'Kobold'
       level = 0
       vit = 1
-      strength = 10
+      strength = 2
       weapon_category = 'trinket'
       image_path = './media/kobold.png'
     elsif monster_roll == 3
@@ -68,65 +68,67 @@ class Battle < ActiveRecord::Base
       str = 31
       image_path = './media/deep_one.png'
     elsif monster_roll == 9
-      name = 'Deep One'
-      level = 7
-      vit = 31
-      str = 31
-      image_path = './media/deep_one.png'
+      name = 'Skeleton Warrior'
+      weapon_category = "sword"
+      level = 2
+      vit = 1
+      str = 2
+      image_path = './media/skeleton_warrior.png'
     elsif monster_roll == 10
-      name = 'Deep One'
-      level = 7
-      vit = 31
-      str = 31
-      image_path = './media/deep_one.png'
+      name = 'Skeleton Conscript'
+      weapon_category = "spear"
+      level = 1
+      vit = 1
+      str = 1
+      image_path = './media/skeleton_conscript.png'
     elsif monster_roll == 11
-      name = 'Deep One'
-      level = 7
-      vit = 31
-      str = 31
-      image_path = './media/deep_one.png'
+      name = 'Skull Cluster'
+      weapon_category = "arcane"
+      level = 5
+      vit = 10
+      str = 10
+      image_path = './media/skull_cluster.png'
     elsif monster_roll == 12
-      name = 'Deep One'
+      name = 'Giant Moth'
+      weapon_category = "arcane"
       level = 7
-      vit = 31
-      str = 31
-      image_path = './media/deep_one.png'
+      vit = 4
+      str = 12
+      image_path = './media/giant_moth.png'
     elsif monster_roll == 13
-      name = 'Deep One'
-      level = 7
-      vit = 31
-      str = 31
-      image_path = './media/deep_one.png'
+      name = 'Beholder'
+      weapon_category = "arcane"
+      level = 8
+      vit = 10
+      str = 12
+      image_path = './media/beholder.png'
     elsif monster_roll == 14
-      name = 'Deep One'
-      level = 7
-      vit = 31
-      str = 31
-      image_path = './media/deep_one.png'
+      name = 'Beast'
+      level = 3
+      vit = 5
+      str = 20
+      image_path = './media/beast.png'
     elsif monster_roll == 15
-      name = 'Deep One'
-      level = 7
-      vit = 31
-      str = 31
-      image_path = './media/deep_one.png'
+      name = 'Centaur'
+      weapon_category = "hammer"
+      level = 6
+      vit = 10
+      str = 12
+      image_path = './media/centaur.png'
     elsif monster_roll == 16
-      name = 'Deep One'
-      level = 7
-      vit = 31
-      str = 31
-      image_path = './media/deep_one.png'
+      name = 'Lizard'
+      weapon_category = "nature"
+      level = 1
+      vit = 3
+      str = 12
+      image_path = './media/lizard.png'
     elsif monster_roll == 17
-      name = 'Deep One'
-      level = 7
-      vit = 31
-      str = 31
-      image_path = './media/deep_one.png'
-    elsif monster_roll == 18
-      name = 'Deep One'
-      level = 7
-      vit = 31
-      str = 31
-      image_path = './media/deep_one.png'
+      name = 'Chimera'
+      weapon_category = "nature"
+      level = 10
+      vit = 30
+      str = 30
+      image_path = './media/chimera.png'
     end
 
     monster = Entity.create(str: strength, vit: vit, name: name, level: level, pc?: false, alive?: true, image_path: image_path)
