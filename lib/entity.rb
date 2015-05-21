@@ -13,10 +13,12 @@ class Entity < ActiveRecord::Base
 
   def damage
     weapon_bonus = 5
-    weapons = self.weapons.all
-    if weapons != []
-      max = weapons.first.max_power
-      min = weapons.first.min_power
+
+    weapon = self.weapons.where(isequipped?: true).take
+
+    if weapon != nil
+      max = weapon.max_power
+      min = weapon.min_power
       weapon_bonus = Random.new.rand(min..max)
     end
     self.str * weapon_bonus / 10
