@@ -32,6 +32,8 @@ class WorldWindow < Gosu::Window
     @scaler = 16 #scales the size of the image tiles to account for image size
     @countdown = 0 #is used in #update to control player speed
     @player = Entity.create(name: 'Dirge', in_battle?: false, str: 15, level: 1, xp: 0, health: 100,  location_x: 1, location_y: 1, pc?: true, image_path: 'media/fox.png', alive?: true, entity_drawn?: false)
+    @weapon = Weapon.generate_random('sword')
+    @player.weapons.push(@weapon)
     @entity_image = Gosu::Image.new(self, "#{@player.image_path}", false)
     @step_counter = 0
     @screen = 'world'
@@ -103,6 +105,14 @@ class WorldWindow < Gosu::Window
       draw_quad(1, 1, 0xffffffff, WIDTH, 1, 0xffffffff, WIDTH, HEIGHT, 0xffff0000, 1, HEIGHT, 0xffff0000, 0)
       @font.draw("(R)eturn to World", 450, 700, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
     else
+      #HUD
+      @font.draw("Level: #{@player.level}", 10, 10, 2, scale_x = 0.90, scale_y = 0.90, color = 0xff_ffffff)
+      @font.draw("Health: #{@player.health}", 10, 25, 2, scale_x = 0.90, scale_y = 0.90, color = 0xff_ffffff)
+      if @player.weapons.first
+        @font.draw("Weapon: #{@player.weapons.first.name} - #{@player.weapons.first.min_power}-#{@player.weapons.first.max_power}", 10, 40, 2, scale_x = 0.90, scale_y = 0.90, color = 0xff_ffffff)
+      end
+      #@font.draw("Encounter Chance: #{}", 450, 100, 2, scale_x = 0.75, scale_y = 0.75, color = 0xff_ffffff)
+
       #draws map
       @floor.map.each_index do |x|
         @floor.map[x].each_index do |y|
@@ -123,7 +133,7 @@ class WorldWindow < Gosu::Window
       end
       @entity_image.draw(@player.location_x*16, @player.location_y*16, 1)
     end
-    
+
   def update
     if @screen == 'battle'
       if @countdown > 0 then
