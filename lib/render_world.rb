@@ -12,7 +12,7 @@ BOARD_WIDTH = 120
 BOARD_HEIGHT = 67
 TICKS_PER_STEP = 5
 DELAY = 30
-ENCOUNTER = 150 #lower for more encounters, higher for less
+ENCOUNTER = 200 #lower for more encounters, higher for less
 BOSS_LEVEL = 10
 
 class WorldWindow < Gosu::Window
@@ -216,14 +216,16 @@ class WorldWindow < Gosu::Window
       if @player.location_y == @exit.fetch(:y) && @player.location_x == @exit.fetch(:x)
         @floor = Floor.new({:width => BOARD_WIDTH, :height => BOARD_HEIGHT}) # call toby's mapmaker
         @level_counter += 1
-        if @level_counter > BOSS_LEVEL - 1
+        if @level_counter == BOSS_LEVEL
           @floor.rogue_style
-          @floor_image = Gosu::Image.new(self, "./media/grass_tile.png", false) # image tile 1
-          @wall_image = Gosu::Image.new(self, "./media/wall.gif", false) # image tile 2
-        elsif @level_counter == BOSS_LEVEL
+          @floor_image = Gosu::Image.new(self, "./media/castle_floor_tile.png", false) # image tile 1
+          @wall_image = Gosu::Image.new(self, "./media/castle_wall_tile.png", false) # image tile 2
+          @exit_image = Gosu::Image.new(self, "./media/boss_tile.png", false) # exit tile 1
+        elsif @level_counter > BOSS_LEVEL
           @monster = Battle.random_boss
           @monster_image = Gosu::Image.new(self, "#{@monster.image_path}", false)
           @battle = Battle.new(name: 'Battle!', boss?: false, active?: true)
+          @player.enter_battle
           @screen = 'battle'
         else
           @floor.generate_map
