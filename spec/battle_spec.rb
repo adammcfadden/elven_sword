@@ -19,13 +19,19 @@ describe Battle do
     end
   end
 
-  describe '#entity0_attack' do
+  describe '#attack' do
     it 'the first entity (player) attacks the second (monster)' do
       player = Entity.create(name: 'Dirge', level: 1, xp: 0, str: 10, health: 100,  location_x: 1, location_y: 1, pc?: true, alive?: true)
       monster = Entity.create(name: 'Roshan', level: 1, xp: 0, str: 100, health: 100,  location_x: 1, location_y: 1, pc?: false, alive?: true)
       battle = Battle.new(name: 'Battle!', boss?: false)
       battle.attack(player, monster)
       expect(monster.health).to eq(95)
+    end
+    it 'returns the damage value of the attack' do
+      player = Entity.create(name: 'Dirge', level: 1, xp: 0, str: 10, health: 100,  location_x: 1, location_y: 1, pc?: true, alive?: true)
+      monster = Entity.create(name: 'Roshan', level: 1, xp: 0, str: 100, health: 100,  location_x: 1, location_y: 1, pc?: false, alive?: true)
+      battle = Battle.new(name: 'Battle!', boss?: false)
+      expect(battle.attack(player, monster)).to eq(5)
     end
   end
 
