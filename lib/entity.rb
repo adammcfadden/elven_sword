@@ -61,8 +61,20 @@ class Entity < ActiveRecord::Base
 
   def level_up
     level = self.level
+    str = self.str
+    vit = self.vit
     level += 1
-    self.update(level: level, xp: 0)
+    6.times do
+      roll = rand(2)
+
+      if roll == 0
+        vit +=1
+      elsif roll == 1
+        str +=1
+      end
+      self.update(level: level, xp: 0, vit: vit, str: str)
+    end
+
   end
 
 
