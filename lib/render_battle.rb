@@ -10,22 +10,23 @@ require './lib/weapon'
 WIDTH = 1600
 HEIGHT = 1280
 DELAY = 30
+ENCOUNTER = 500 #lower for more encounters, higher for less
 
 class BattleWindow < Gosu::Window
   def initialize(player_id)
-    super(WIDTH, HEIGHT, false) #map size
-    self.caption = "Fight!" #window title
-    @player = Entity.find(player_id)
-    @player_image = Gosu::Image.new(self, "./media/baby_fox_mccloud.jpg", false) # image tile 1
-    @vs_image = Gosu::Image.new(self, "./media/vs.png", false)
+  #  super(WIDTH, HEIGHT, false) #map size
+  #  self.caption = "Fight!" #window title
+  #  @player = Entity.find(player_id)
+  #  @player_image = Gosu::Image.new(self, "./media/baby_fox_mccloud.jpg", false) # image tile 1
+  #  @vs_image = Gosu::Image.new(self, "./media/vs.png", false)
     # @flee_image = Gosu::Image.new(self, "./media/fox_runs.gif", false)
     # @attack_image = Gosu::Image.new(self, "./media/sword.png", false)
     @player = Entity.find(player_id)
-    @monster_image = Gosu::Image.new(self, "./media/baby_gojira.png", false) # image tile 2
+  #  @monster_image = Gosu::Image.new(self, "./media/baby_gojira.png", false) # image tile 2
     @player_attack_sound = Gosu::Sample.new(self, "media/fox_taunt.wav")
     @monster_attack_sound = Gosu::Sample.new(self, "media/godzilla_roars.wav")
     @player_flee_sound = Gosu::Sample.new(self, "media/fox_flee.wav")
-    @font = Gosu::Font.new(self, "Arial", 18)
+    #@font = Gosu::Font.new(self, "Arial", 18)
     @countdown = 0
 
 #temporary entity/battle creation

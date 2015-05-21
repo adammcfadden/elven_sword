@@ -10,25 +10,30 @@ class Battle < ActiveRecord::Base
       name = 'Ghoul'
       level = 1
       health = 50
+      strength = 10
     elsif monster_roll == 1
       name = 'Goblin'
       level = 2
       health = 100
+      strength = 10
     elsif monster_roll == 2
       name = 'Kobold'
       level = 1
       health = 25
+      strength = 10
     elsif monster_roll == 3
       name = 'Orc'
       level = 4
       health = 200
+      strength = 10
     elsif monster_roll == 4
       name = 'Nekker'
       level = 2
       health = 150
+      strength = 10
     end
 
-    monster = Entity.create(name: name, level: level, health: health, pc?: false, alive?: true)
+    monster = Entity.create(str: strength, name: name, level: level, health: health, pc?: false, alive?: true)
     return monster
   end
 
