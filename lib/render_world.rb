@@ -45,6 +45,9 @@ class WorldWindow < Gosu::Window
     @step_counter = 0
     @player_damage = -1
     @monster_damage = -1
+    @monster_1 = Battle.random_monster
+    @monster_1.location_x = 20
+    @monster_1.location_y = 20
   end
 
   def draw
@@ -140,6 +143,10 @@ class WorldWindow < Gosu::Window
       @entity_image.draw(@player.location_x*16, @player.location_y*16, 1)
 ###draws exit image
       @exit_image.draw(@exit.fetch(:x)*@scaler, @exit.fetch(:y)*@scaler, 1)
+###monster walk
+binding.pry
+      @entity_image.draw(@monster_1.location_x*16, @monster_1.location_y*16, 1)
+###monster walk
     end
 
 
@@ -321,6 +328,17 @@ class WorldWindow < Gosu::Window
             @step_counter += 1
           end
         end
+###monster walk
+        if !(@monster_1.is_alive?)
+          @monster_1 = Battle.random_monster
+        end
+        binding.pry
+        unless @floor.is_solid?((@monster_1.location_x + Random.new.rand(-1..1)), @monster_1.location_y + Random.new.rand(-1..1))
+        end
+        if @player.location_x == @monster_1.location_x && @player.location_y == @monster_1.loaction_y
+          @battle = Battle.new(name: 'Battle!', boss?: false, active?: true)
+        end
+###monster walk
       end
     end
     end
