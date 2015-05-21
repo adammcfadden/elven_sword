@@ -116,7 +116,9 @@ class WorldWindow < Gosu::Window
       @font.draw("PLayer Strength: #{@player.str}", 450, 200, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
 
 ##### WORLD #####
-
+    elsif @screen == 'game_over'
+      draw_quad(1, 1, 0xff_808080, WIDTH, 1, 0xff_808080, WIDTH, HEIGHT, 0xff_808080, 1, HEIGHT, 0xff_808080, 0)
+      @font.draw("GAME OVER...", 700, HEIGHT/2, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
     else
 ###HUD###
       draw_quad(0, 0, 0x90_000000, 200, 0, 0x90_000000, 0, 90, 0x90_000000, 200, 90, 0x90_000000, 1)
