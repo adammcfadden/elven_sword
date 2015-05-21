@@ -13,14 +13,15 @@ BOARD_HEIGHT = 67
 TICKS_PER_STEP = 5
 DELAY = 30
 ENCOUNTER = 150 #lower for more encounters, higher for less
+BOSS_LEVEL = 10
 
 class WorldWindow < Gosu::Window
   def initialize
 ### constants that will not change###
     super(BOARD_WIDTH*16, BOARD_HEIGHT*16, false) #map size
     self.caption = "Elven Sword!" #window title
-    @floor_image = Gosu::Image.new(self, "./media/grass_tile.png", false) # image tile 1
     @exit_image = Gosu::Image.new(self, "./media/two.png", false) # exit tile 1
+    @floor_image = Gosu::Image.new(self, "./media/grass_tile.png", false) # image tile 1
     @wall_image = Gosu::Image.new(self, "./media/stump_tile.png", false) # image tile 2
     @player_image = Gosu::Image.new(self, "./media/player.png", false) # image tile 1
     @player_attack_sound = Gosu::Sample.new(self, "media/fox_taunt.wav")
@@ -118,13 +119,13 @@ class WorldWindow < Gosu::Window
 
     else
 ###HUD###
-      draw_quad(0, 0, 0x80000000, 180, 0, 0x30000000, 0, 85, 0x80000000, 180, 85, 0x30000000, 1)
-      @font.draw("Player Level: #{@player.level}", 10, 10, 2, scale_x = 0.70, scale_y = 0.70, color = 0xff_ffffff)
-      @font.draw("Health: #{@player.health}", 10, 25, 2, scale_x = 0.70, scale_y = 0.70, color = 0xff_ffffff)
+      draw_quad(0, 0, 0x90_000000, 200, 0, 0x90_000000, 0, 90, 0x90_000000, 200, 90, 0x90_000000, 1)
+      @font.draw("Player Level: #{@player.level}", 10, 10, 2, scale_x = 0.80, scale_y = 0.80, color = 0xff_ffffff)
+      @font.draw("Health: #{@player.health}", 10, 25, 2, scale_x = 0.80, scale_y = 0.80, color = 0xff_ffffff)
       if @player_equipped_weapon
-        @font.draw("Weapon: #{@player_equipped_weapon.name} - #{@player_equipped_weapon.min_power}-#{@player_equipped_weapon.max_power}", 10, 40, 2, scale_x = 0.70, scale_y = 0.70, color = 0xff_ffffff)
+        @font.draw("Weapon: #{@player_equipped_weapon.name} - #{@player_equipped_weapon.min_power}-#{@player_equipped_weapon.max_power}", 10, 40, 2, scale_x = 0.80, scale_y = 0.80, color = 0xff_ffffff)
       end
-      @font.draw("Level: #{@player.level}", 10, 70, 2, scale_x = 0.70, scale_y = 0.70, color = 0xff_ffffff)
+      @font.draw("Level: #{@level_counter}", 10, 70, 2, scale_x = 0.85, scale_y = 0.85, color = 0xff_ffffff)
 ###draws map
       @floor.map.each_index do |x|
         @floor.map[x].each_index do |y|
@@ -214,12 +215,23 @@ class WorldWindow < Gosu::Window
     else
       if @player.location_y == @exit.fetch(:y) && @player.location_x == @exit.fetch(:x)
         @floor = Floor.new({:width => BOARD_WIDTH, :height => BOARD_HEIGHT}) # call toby's mapmaker
-        @floor.generate_map
+        @level_counter += 1
+        if @level_counter > BOSS_LEVEL - 1
+          @floor.rogue_style
+          @floor_image = Gosu::Image.new(self, "./media/grass_tile.png", false) # image tile 1
+          @wall_image = Gosu::Image.new(self, "./media/wall.gif", false) # image tile 2
+        elsif @level_counter == BOSS_LEVEL
+          @monster = Battle.random_boss
+          @monster_image = Gosu::Image.new(self, "#{@monster.image_path}", false)
+          @battle = Battle.new(name: 'Battle!', boss?: false, active?: true)
+          @screen = 'battle'
+        else
+          @floor.generate_map
+        end
         entrance_and_exit = @floor.get_entrance_and_exit
         @entrance = entrance_and_exit.fetch(:enter)
         @exit = entrance_and_exit.fetch(:exit)
         @player.update(location_x: @entrance.fetch(:x), location_y: @entrance.fetch(:y))
-        @level_counter += 1
       end
       if @countdown > 0 then
          @countdown -= 1
