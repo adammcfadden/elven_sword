@@ -29,6 +29,7 @@ class WorldWindow < Gosu::Window
     @font = Gosu::Font.new(self, "Arial", 24)
     @scaler = 16 #scales the size of the image tiles to account for image size
     @countdown = 0 #is used in #update to control player speed
+    @level_counter = 1
 ###world/player generation###
     @floor = Floor.new({:width => BOARD_WIDTH, :height => BOARD_HEIGHT}) # call toby's mapmaker
     @floor.generate_map
@@ -117,14 +118,14 @@ class WorldWindow < Gosu::Window
 
     else
 ###HUD###
-      draw_quad(0, 0, 0x80000000, 180, 0, 0x30000000, 0, 60, 0x80000000, 180, 60, 0x30000000, 1)
-      @font.draw("Level: #{@player.level}", 10, 10, 2, scale_x = 0.70, scale_y = 0.70, color = 0xff_ffffff)
+      draw_quad(0, 0, 0x80000000, 180, 0, 0x30000000, 0, 85, 0x80000000, 180, 85, 0x30000000, 1)
+      @font.draw("Player Level: #{@player.level}", 10, 10, 2, scale_x = 0.70, scale_y = 0.70, color = 0xff_ffffff)
       @font.draw("Health: #{@player.health}", 10, 25, 2, scale_x = 0.70, scale_y = 0.70, color = 0xff_ffffff)
       if @player_equipped_weapon
         @font.draw("Weapon: #{@player_equipped_weapon.name} - #{@player_equipped_weapon.min_power}-#{@player_equipped_weapon.max_power}", 10, 40, 2, scale_x = 0.70, scale_y = 0.70, color = 0xff_ffffff)
       end
-      #@font.draw("Encounter Chance: #{}", 450, 100, 2, scale_x = 0.75, scale_y = 0.75, color = 0xff_ffffff)
-      #draws map
+      @font.draw("Level: #{@player.level}", 10, 70, 2, scale_x = 0.70, scale_y = 0.70, color = 0xff_ffffff)
+###draws map
       @floor.map.each_index do |x|
         @floor.map[x].each_index do |y|
           if(@floor.is_solid?(x, y))
@@ -134,15 +135,9 @@ class WorldWindow < Gosu::Window
           end
         end
       end
-      #draws player at random location that is not solid.
-      # until @player.entity_drawn? do
-      #   unless @floor.is_solid?(@player.location_x, @player.location_y)
-      #     @player.entity_is_drawn
-      #   else
-      #     @player.randomize_coords
-      #   end
-      # end
+###draws player at entrance
       @entity_image.draw(@player.location_x*16, @player.location_y*16, 1)
+###draws exit image
       @exit_image.draw(@exit.fetch(:x)*@scaler, @exit.fetch(:y)*@scaler, 1)
     end
 
@@ -159,12 +154,8 @@ class WorldWindow < Gosu::Window
         if @countdown == 0
            @countdown = DELAY
            #@monster_attack_sound.play
-           #@player_pre_health = @player.health
-           #@monster_pre_health = @monster.health
            @monster_damage = @battle.attack(@player, @monster)
            @player_damage = @battle.attack(@monster, @player)
-           #@player_post_health = @player.health
-           #@monster_post_health = @monster.health
         end
       end
       if (button_down? Gosu::KbF) && @battle.active? then
@@ -228,6 +219,7 @@ class WorldWindow < Gosu::Window
         @entrance = entrance_and_exit.fetch(:enter)
         @exit = entrance_and_exit.fetch(:exit)
         @player.update(location_x: @entrance.fetch(:x), location_y: @entrance.fetch(:y))
+        @level_counter += 1
       end
       if @countdown > 0 then
          @countdown -= 1
