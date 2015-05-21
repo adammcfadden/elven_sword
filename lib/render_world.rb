@@ -34,6 +34,7 @@ class WorldWindow < Gosu::Window
     @player = Entity.create(name: 'Dirge', vit: 10, in_battle?: false, str: 100, level: 1, xp: 0, health: 125,  location_x: 1, location_y: 1, pc?: true, image_path: 'media/fox.png', alive?: true, entity_drawn?: false)
     @weapon = Weapon.generate_random('sword')
     @player.weapons.push(@weapon)
+    @player_equipped_weapon = @player.weapons.first
     @entity_image = Gosu::Image.new(self, "#{@player.image_path}", false)
     @step_counter = 0
     @screen = 'world'
@@ -52,7 +53,7 @@ class WorldWindow < Gosu::Window
       @font.draw("  LEVEL: #{@player.level}", 200, 900, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
       @font.draw("     XP: #{@player.xp}", 200, 950, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
       if @player.weapons.first #player weapon
-        @font.draw("WEAPON: #{@player.weapons.last.name}", 200, 1000, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
+        @font.draw("WEAPON: #{@player_equipped_weapon.name}", 200, 1000, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
       else
         @font.draw("WEAPON: None", 200, 1000, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
       end
@@ -123,8 +124,8 @@ class WorldWindow < Gosu::Window
       #HUD
       @font.draw("Level: #{@player.level}", 10, 10, 2, scale_x = 0.90, scale_y = 0.90, color = 0xff_ffffff)
       @font.draw("Health: #{@player.health}", 10, 25, 2, scale_x = 0.90, scale_y = 0.90, color = 0xff_ffffff)
-      if @player.weapons.first
-        @font.draw("Weapon: #{@player.weapons.last.name} - #{@player.weapons.last.min_power}-#{@player.weapons.last.max_power}", 10, 40, 2, scale_x = 0.90, scale_y = 0.90, color = 0xff_ffffff)
+      if @player_equipped_weapon
+        @font.draw("Weapon: #{@player_equipped_weapon.name} - #{@player_equipped_weapon.min_power}-#{@player_equipped_weapon.max_power}", 10, 40, 2, scale_x = 0.90, scale_y = 0.90, color = 0xff_ffffff)
       end
       #@font.draw("Encounter Chance: #{}", 450, 100, 2, scale_x = 0.75, scale_y = 0.75, color = 0xff_ffffff)
 
@@ -199,7 +200,13 @@ class WorldWindow < Gosu::Window
           @player.weapons.each do |weapon|
             weapon.unequip
           end
+          @monster.weapons.first.equip
           @player.weapons.push(@monster.weapons.first)
+          @player.weapons.each do |weapon|
+            if weapon.isequipped?
+              @player_equipped_weapon = weapon
+            end
+          end
         end
       end
     elsif @screen == 'level_up'
