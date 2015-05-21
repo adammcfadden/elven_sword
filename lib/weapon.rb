@@ -44,6 +44,29 @@ class Weapon < ActiveRecord::Base
       else
         weapon = Weapon.create(name: 'Stout Spear', category: 'spear', max_power:16, min_power: 8)
       end
+    elsif category == 'arcane'
+      roll = rand(3)
+      if roll == 0
+        weapon = Weapon.create(name: 'Flaming Skull', category: 'arcane', max_power:30, min_power:6 )
+      elsif roll == 1
+        weapon = Weapon.create(name: 'Moth Wing', category: 'arcane', max_power:40, min_power: 8)
+      else
+        weapon = Weapon.create(name: 'Beholder Eye', category: 'arcane', max_power:26, min_power: 15)
+      end
+    elsif category == 'hammer'
+      roll = rand(2)
+      if roll == 0
+        weapon = Weapon.create(name: 'Spiked Maul', category: 'hammer', max_power:22, min_power: 12)
+      else
+        weapon = Weapon.create(name: 'Great Hammer', category: 'hammer', max_power:32, min_power: 2)
+      end
+    elsif category == 'nature'
+      roll = rand(2)
+      if roll == 0
+        weapon = Weapon.create(name: 'Poisoned Fang', category: 'nature', max_power:16, min_power: 12)
+      else
+        weapon = Weapon.create(name: 'Vicious Claw', category: 'nature', max_power:18, min_power: 14)
+      end
     elsif category == 'artifact'
       roll = rand(3)
       if roll == 0
