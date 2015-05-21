@@ -65,5 +65,11 @@ class Entity < ActiveRecord::Base
     self.update(level: level, xp: 0)
   end
 
+  def flee
+    self.update(in_battle?: false)
+  end
 
+  def enter_battle
+    self.update(in_battle?: true)
+  end
 end
