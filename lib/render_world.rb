@@ -3,15 +3,16 @@ require 'sinatra/activerecord'
 require './lib/floor'
 require './lib/entity'
 require './lib/battle'
-require './lib/render_battle'
 require './lib/weapon'
 require 'pry'
 
-BOARD_WIDTH = 80
+WIDTH = 1600
+HEIGHT = 1280
+BOARD_WIDTH = 100
 BOARD_HEIGHT = 80
 TICKS_PER_STEP = 5
 DELAY = 30
-ENCOUNTER = 500 #lower for more encounters, higher for less
+ENCOUNTER = 200 #lower for more encounters, higher for less
 
 class WorldWindow < Gosu::Window
   def initialize
@@ -129,6 +130,10 @@ class WorldWindow < Gosu::Window
          @countdown = DELAY
          @battle.flee
       end
+      if (button_down? Gosu::KbB) then #lets player exit a battle, new if statement should exit when flee, monster health 0, etc.
+         @in_battle = 'no'
+         @monster = Battle.random_monster
+      end
       # if !(@battle.active?) then
       #   @player.name = "QUITTER"
       #   @monster.name = "PROXY WINNER"
@@ -138,8 +143,10 @@ class WorldWindow < Gosu::Window
          @countdown -= 1
       end
       if button_down? Gosu::KbLeft then
-        @random_encounter_one = Random.new.rand(@step_counter..ENCOUNTER)
-        @random_encounter_two = Random.new.rand(@step_counter..ENCOUNTER)
+        if @countdown == 0
+          @random_encounter_one = Random.new.rand(@step_counter..ENCOUNTER)
+          @random_encounter_two = Random.new.rand(@step_counter..ENCOUNTER)
+        end
         if @random_encounter_one == @random_encounter_two
           @in_battle = 'yes'
           @step_counter = 0
@@ -153,8 +160,10 @@ class WorldWindow < Gosu::Window
         end
       end
       if button_down? Gosu::KbRight then
-        @random_encounter_one = Random.new.rand(@step_counter..ENCOUNTER)
-        @random_encounter_two = Random.new.rand(@step_counter..ENCOUNTER)
+        if @countdown == 0
+          @random_encounter_one = Random.new.rand(@step_counter..ENCOUNTER)
+          @random_encounter_two = Random.new.rand(@step_counter..ENCOUNTER)
+        end
         if @random_encounter_one == @random_encounter_two
           @in_battle = 'yes'
           @step_counter = 0
@@ -164,13 +173,14 @@ class WorldWindow < Gosu::Window
             @countdown = TICKS_PER_STEP
             @player.move_east
             @step_counter += 1
-            @in_battle = 'yes'
           end
         end
       end
       if button_down? Gosu::KbUp then
-        @random_encounter_one = Random.new.rand(@step_counter..ENCOUNTER)
-        @random_encounter_two = Random.new.rand(@step_counter..ENCOUNTER)
+        if @countdown == 0
+          @random_encounter_one = Random.new.rand(@step_counter..ENCOUNTER)
+          @random_encounter_two = Random.new.rand(@step_counter..ENCOUNTER)
+        end
         if @random_encounter_one == @random_encounter_two
           @in_battle = 'yes'
           @step_counter = 0
@@ -184,8 +194,10 @@ class WorldWindow < Gosu::Window
         end
       end
       if button_down? Gosu::KbDown then
-        @random_encounter_one = Random.new.rand(@step_counter..ENCOUNTER)
-        @random_encounter_two = Random.new.rand(@step_counter..ENCOUNTER)
+        if @countdown == 0
+          @random_encounter_one = Random.new.rand(@step_counter..ENCOUNTER)
+          @random_encounter_two = Random.new.rand(@step_counter..ENCOUNTER)
+        end
         if @random_encounter_one == @random_encounter_two
           @in_battle = 'yes'
           @step_counter = 0
