@@ -2,19 +2,58 @@ class Weapon < ActiveRecord::Base
   has_and_belongs_to_many :entities
 
   def self.generate_random(category)
-
     if category == 'sword'
-      weapon = Weapon.create(name:'Sword', category: 'sword', max_power: 14, min_power: 8)
+      roll = rand(2)
+      if roll == 0
+        weapon = Weapon.create(name:'Long Sword', category: 'sword', max_power: 12, min_power: 8)
+      else
+        weapon = Weapon.create(name:'Short Sword', category: 'sword', max_power: 8, min_power: 6)
+      end
     elsif category == 'dagger'
-      weapon = Weapon.create(name:'Dagger', category: 'dagger', max_power: 8, min_power: 4)
+      roll = rand(2)
+      if roll == 0
+      weapon = Weapon.create(name:'Rusty Dagger', category: 'dagger', max_power: 6, min_power: 3)
+      else
+        weapon = Weapon.create(name:'Ceremonial Dagger', category: 'dagger', max_power: 8, min_power: 4)
+      end
     elsif category == 'axe'
-      weapon = Weapon.create(name: 'Axe', category: 'axe', max_power: 16, min_power: 8)
-    elsif category == 'candle'
-      weapon = Weapon.create(name: 'Candle', category: 'candle', max_power: 3, min_power: 1)
+      roll = rand(2)
+      if roll == 0
+      weapon = Weapon.create(name: 'Hatchet', category: 'axe', max_power: 10, min_power: 2)
+      else
+        weapon = Weapon.create(name: 'Logging Axe', category: 'axe', max_power: 16, min_power: 4)
+      end
+    elsif category == 'trinket'
+      roll = rand(2)
+      if roll == 0
+        weapon = Weapon.create(name: 'Candle', category: 'trinket', max_power: 2, min_power: 1)
+      else
+        weapon = Weapon.create(name: 'Sharp Rock', category: 'trinket', max_power: 4, min_power: 3)
+      end
     elsif category == 'wand'
-      weapon = Weapon.create(name: 'Wand', category: 'wand', max_power:25, min_power:0)
+      roll = rand(2)
+      if roll == 0
+        weapon = Weapon.create(name: 'Runed Stick', category: 'wand', max_power: 15, min_power: 0)
+      else
+        weapon = Weapon.create(name: 'Ancient Wand', category: 'wand', max_power: 25, min_power: 0)
+      end
+    elsif category == 'spear'
+      roll = rand(2)
+      if roll == 0
+        weapon = Weapon.create(name: 'Pointed Stick', category: 'spear', max_power:8, min_power: 0)
+      else
+        weapon = Weapon.create(name: 'Stout Spear', category: 'spear', max_power:16, min_power: 8)
+      end
+    elsif category == 'artifact'
+      roll = rand(3)
+      if roll == 0
+        weapon = Weapon.create(name: 'Demon Claw', category: 'artifact', max_power: 30, min_power: 20)
+      elsif roll == 1
+        weapon = Weapon.create(name: 'Beholder Eye', category: 'artifact', max_power: 45, min_power: 0)
+      else
+        weapon = Weapon.create(name: 'Deep One Heart', category: 'artifact', max_power: 25, min_power: 25)
+      end
     end
-
   end
 
   def equip

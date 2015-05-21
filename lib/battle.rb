@@ -4,7 +4,7 @@ class Battle < ActiveRecord::Base
 
   def self.random_monster
     roll = Random.new
-    monster_roll = rand(5)
+    monster_roll = rand(7)
 
     weapon_category = nil
 
@@ -24,37 +24,60 @@ class Battle < ActiveRecord::Base
     elsif monster_roll == 2
       name = 'Kobold'
       level = 0
-      vit = 1
+      vit = 4
       strength = 10
-      weapon_category = 'candle'
+      weapon_category = 'trinket'
       image_path = './media/kobold.png'
     elsif monster_roll == 3
       name = 'Orc'
       level = 3
-      vit = 5
+      vit = 12
       strength = 10
       weapon_category = 'axe'
       image_path = './media/orc.png'
     elsif monster_roll == 4
       name = 'Nekker'
-      level = 1
-      vit = 8
-      strength = 15
+      level = 3
+      vit = 18
+      strength = 20
       image_path = './media/nekker.png'
     elsif monster_roll == 5
       name = 'Mindflayer'
-      level = 2
+      level = 4
       vit = 2
       strength = 4
       weapon_category = 'wand'
       image_path = './media/mindflayer.png'
     elsif monster_roll == 6
       name = 'Gorgon'
-      level = 3
-      vit = 15
-      strength = 12
+      level = 5
+      vit = 30
+      strength = 20
       image_path = './media/gorgon.png'
+    elsif monster_roll == 7
+      name = 'Cultist'
+      level = 6
+      vit = 12
+      strength = 35
+      image_path = './media/cultist.png'
+      weapon_category = 'dagger'
+    elsif monster_roll == 8
+      name = 'Deep One'
+      level = 7
+      vit = 31
+      str = 31
+      image_path = './media/deep_one.png'
     end
+
+    def self.random_boss
+      name = 'Neo-Alucard'
+      level = 12
+      vit = 40
+      str = 40
+      image_path = './media/boss.png'
+      weapon_category = 'artifact'
+    end
+
 
     monster = Entity.create(str: strength, vit: vit, name: name, level: level, pc?: false, alive?: true, image_path: image_path)
     monster.level_up(rand(6))
