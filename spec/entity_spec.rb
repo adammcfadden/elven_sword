@@ -20,7 +20,7 @@ describe Entity do
       weapon = Weapon.generate_random('sword')
       player.weapons.push(weapon)
       weapon.equip
-      expect(player.damage).to be_between(12,18).inclusive
+      expect(player.damage > 7).to eq(true)
   end
 end
 
@@ -67,11 +67,16 @@ end
 
   describe '#level_up' do
     it 'increases the level of the entity' do
-      player = Entity.create(name: 'Dirge', level: 1, xp: 0, health: 100, location_x: 1, location_y: 1, pc?: true, alive?: true)
-      player.level_up
+      player = Entity.create(name: 'Dirge', level: 1, str: 10, vit: 10, xp: 0, health: 100, location_x: 1, location_y: 1, pc?: true, alive?: true)
+      player.level_up(6)
       expect(player.level).to eq(2)
       expect(player.xp).to eq(0)
     end
-  end
+    it 'randomly increases stats' do
+      player = Entity.create(name: 'Dirge', level: 1, str: 10, vit: 10, xp: 0, health: 100, location_x: 1, location_y: 1, pc?: true, alive?: true)
+      player.level_up(6)
+      expect(player.str > 10 || player.vit > 10).to eq(true)
+    end
 
+  end
 end
