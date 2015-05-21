@@ -45,6 +45,7 @@ class WorldWindow < Gosu::Window
     @step_counter = 0
     @player_damage = -1
     @monster_damage = -1
+    @screen = 'start'
   end
 
   def draw
@@ -123,6 +124,7 @@ class WorldWindow < Gosu::Window
 
     elsif @screen == 'level_up'
       draw_quad(1, 1, 0xff_000000, WIDTH, 1, 0xff_000000, WIDTH, HEIGHT, 0xff_000000, 1, HEIGHT, 0xff_000000, 0)
+      @player_image.draw(20, 20, 1, scale_x = 1, scale_y = 1)
       @font.draw("LEVEL UP!!", 700, HEIGHT/2 - 100, 2, scale_x = 2, scale_y = 2, color = 0xff_ffffff)
       @font.draw("Name: #{@player.name}", 700, HEIGHT/2 + 40, 2, scale_x = 1, scale_y = 1, color = 0xff_ffffff)
       @font.draw("Level: #{@player.level}", 700, HEIGHT/2 + 60, 2, scale_x = 1, scale_y = 1, color = 0xff_ffffff)
@@ -130,6 +132,14 @@ class WorldWindow < Gosu::Window
       @font.draw("Strength: #{@player.str}", 700, HEIGHT/2 + 100, 2, scale_x = 1, scale_y = 1, color = 0xff_ffffff)
       @font.draw("Xp: #{@player.xp}/#{@player.level * 100}", 700, HEIGHT/2 + 120, 2, scale_x = 1, scale_y = 1, color = 0xff_ffffff)
       @font.draw("L - Loot the body", 700, HEIGHT/2 + 180, 2, scale_x = 2, scale_y = 2, color = 0xff_ffffff)
+
+##### START #####
+
+    elsif @screen == 'start'
+      draw_quad(1, 1, 0xff_000000, WIDTH, 1, 0xff_000000, WIDTH, HEIGHT, 0xff_000000, 1, HEIGHT, 0xff_000000, 0)
+      @player_image.draw(20, 20, 1, scale_x = 1, scale_y = 1)
+      @font.draw("Elven Sword", 700, HEIGHT/2, 2, scale_x = 5, scale_y = 5, color = 0xff_ffffff)
+      @font.draw("S - Start", 700, HEIGHT/2 + 180, 2, scale_x = 2, scale_y = 2, color = 0xff_ffffff)
 
 ##### GAME_OVER #####
 
@@ -223,6 +233,14 @@ class WorldWindow < Gosu::Window
             end
           end
         end
+      end
+
+
+##### START #####
+
+    elsif @screen == 'start'
+      if (button_down? Gosu::KbS) then #
+        @screen = 'world'
       end
 
 ##### LEVEL_UP #####
