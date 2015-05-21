@@ -120,7 +120,7 @@ class Battle < ActiveRecord::Base
       weapon_category = "nature"
       level = 1
       vit = 3
-      str = 12
+      str = 4
       image_path = './media/lizard.png'
     elsif monster_roll == 17
       name = 'Chimera'

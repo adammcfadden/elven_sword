@@ -37,7 +37,7 @@ class WorldWindow < Gosu::Window
     entrance_and_exit = @floor.get_entrance_and_exit
     @entrance = entrance_and_exit.fetch(:enter)
     @exit = entrance_and_exit.fetch(:exit)
-    @player = Entity.create(name: 'Dirge', vit: 10, in_battle?: false, str: 150, level: 1, xp: 0, health: 125,  location_x: @entrance.fetch(:x), location_y: @entrance.fetch(:y), pc?: true, image_path: 'media/player_tile.png', alive?: true, entity_drawn?: false)
+    @player = Entity.create(name: 'Dirge', vit: 15, in_battle?: false, str: 15, level: 1, xp: 0, health: 175,  location_x: @entrance.fetch(:x), location_y: @entrance.fetch(:y), pc?: true, image_path: 'media/player_tile.png', alive?: true, entity_drawn?: false)
     @weapon = Weapon.generate_random('dagger')
     @player.weapons.push(@weapon)
     @player_equipped_weapon = @player.weapons.first
