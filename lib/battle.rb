@@ -67,6 +67,66 @@ class Battle < ActiveRecord::Base
       vit = 31
       str = 31
       image_path = './media/deep_one.png'
+    elsif monster_roll == 9
+      name = 'Deep One'
+      level = 7
+      vit = 31
+      str = 31
+      image_path = './media/deep_one.png'
+    elsif monster_roll == 10
+      name = 'Deep One'
+      level = 7
+      vit = 31
+      str = 31
+      image_path = './media/deep_one.png'
+    elsif monster_roll == 11
+      name = 'Deep One'
+      level = 7
+      vit = 31
+      str = 31
+      image_path = './media/deep_one.png'
+    elsif monster_roll == 12
+      name = 'Deep One'
+      level = 7
+      vit = 31
+      str = 31
+      image_path = './media/deep_one.png'
+    elsif monster_roll == 13
+      name = 'Deep One'
+      level = 7
+      vit = 31
+      str = 31
+      image_path = './media/deep_one.png'
+    elsif monster_roll == 14
+      name = 'Deep One'
+      level = 7
+      vit = 31
+      str = 31
+      image_path = './media/deep_one.png'
+    elsif monster_roll == 15
+      name = 'Deep One'
+      level = 7
+      vit = 31
+      str = 31
+      image_path = './media/deep_one.png'
+    elsif monster_roll == 16
+      name = 'Deep One'
+      level = 7
+      vit = 31
+      str = 31
+      image_path = './media/deep_one.png'
+    elsif monster_roll == 17
+      name = 'Deep One'
+      level = 7
+      vit = 31
+      str = 31
+      image_path = './media/deep_one.png'
+    elsif monster_roll == 18
+      name = 'Deep One'
+      level = 7
+      vit = 31
+      str = 31
+      image_path = './media/deep_one.png'
     end
 
     monster = Entity.create(str: strength, vit: vit, name: name, level: level, pc?: false, alive?: true, image_path: image_path)
