@@ -16,24 +16,25 @@ ENCOUNTER = 150 #lower for more encounters, higher for less
 
 class WorldWindow < Gosu::Window
   def initialize
+### constants that will not change###
     super(BOARD_WIDTH*16, BOARD_HEIGHT*16, false) #map size
     self.caption = "Elven Sword!" #window title
     @floor_image = Gosu::Image.new(self, "./media/grass_tile.png", false) # image tile 1
+    @exit_image = Gosu::Image.new(self, "./media/two.png", false) # exit tile 1
     @wall_image = Gosu::Image.new(self, "./media/stump_tile.png", false) # image tile 2
     @player_image = Gosu::Image.new(self, "./media/player.png", false) # image tile 1
-    @vs_image = Gosu::Image.new(self, "./media/vs.png", false)
-    @monster_image = Gosu::Image.new(self, "./media/baby_gojira.png", false) # image tile 2
     @player_attack_sound = Gosu::Sample.new(self, "media/fox_taunt.wav")
     @monster_attack_sound = Gosu::Sample.new(self, "media/godzilla_roars.wav")
     @player_flee_sound = Gosu::Sample.new(self, "media/fox_flee.wav")
     @font = Gosu::Font.new(self, "Arial", 24)
+    @scaler = 16 #scales the size of the image tiles to account for image size
+    @countdown = 0 #is used in #update to control player speed
+###world/player generation###
     @floor = Floor.new({:width => BOARD_WIDTH, :height => BOARD_HEIGHT}) # call toby's mapmaker
     @floor.generate_map
     entrance_and_exit = @floor.get_entrance_and_exit
     @entrance = entrance_and_exit.fetch(:enter)
     @exit = entrance_and_exit.fetch(:exit)
-    @scaler = 16 #scales the size of the image tiles to account for image size
-    @countdown = 0 #is used in #update to control player speed
     @player = Entity.create(name: 'Dirge', vit: 10, in_battle?: false, str: 15, level: 1, xp: 0, health: 125,  location_x: @entrance.fetch(:x), location_y: @entrance.fetch(:y), pc?: true, image_path: 'media/player_tile.png', alive?: true, entity_drawn?: false)
     @weapon = Weapon.generate_random('dagger')
     @player.weapons.push(@weapon)
@@ -134,15 +135,17 @@ class WorldWindow < Gosu::Window
         end
       end
       #draws player at random location that is not solid.
-      until @player.entity_drawn? do
-        unless @floor.is_solid?(@player.location_x, @player.location_y)
-          @player.entity_is_drawn
-        else
-          @player.randomize_coords
-        end
-      end
+      # until @player.entity_drawn? do
+      #   unless @floor.is_solid?(@player.location_x, @player.location_y)
+      #     @player.entity_is_drawn
+      #   else
+      #     @player.randomize_coords
+      #   end
+      # end
       @entity_image.draw(@player.location_x*16, @player.location_y*16, 1)
+      @exit_image.draw(@exit.fetch(:x)*@scaler, @exit.fetch(:y)*@scaler, 1)
     end
+
 
   def update
 
@@ -217,8 +220,15 @@ class WorldWindow < Gosu::Window
       end
 
 ##### WORLD #####
-
     else
+      if @player.location_y == @exit.fetch(:y) && @player.location_x == @exit.fetch(:x)
+        @floor = Floor.new({:width => BOARD_WIDTH, :height => BOARD_HEIGHT}) # call toby's mapmaker
+        @floor.generate_map
+        entrance_and_exit = @floor.get_entrance_and_exit
+        @entrance = entrance_and_exit.fetch(:enter)
+        @exit = entrance_and_exit.fetch(:exit)
+        @player.update(location_x: @entrance.fetch(:x), location_y: @entrance.fetch(:y))
+      end
       if @countdown > 0 then
          @countdown -= 1
       end
