@@ -59,12 +59,12 @@ class Entity < ActiveRecord::Base
     self.update(xp: xp)
   end
 
-  def level_up
+  def level_up(stat_points_gained)
     level = self.level
     str = self.str
     vit = self.vit
     level += 1
-    6.times do
+    stat_points_gained.times do
       roll = rand(2)
       if roll == 0
         vit +=1
@@ -72,8 +72,16 @@ class Entity < ActiveRecord::Base
         str +=1
       end
     end
+    self.update(level: level, xp: 0, vit: vit, str: str)
+    max_health = get_max_health()
+    self.update(health: max_health)
+  end
+
+  def get_max_health
+    vit = self.vit
+    level = self.level
     max_health = vit * 10 + (level * 25)
-    self.update(level: level, xp: 0, vit: vit, str: str, health: max_health)
+    return max_health
   end
 
 end
