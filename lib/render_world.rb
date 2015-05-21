@@ -28,13 +28,11 @@ class WorldWindow < Gosu::Window
     @player_flee_sound = Gosu::Sample.new(self, "media/fox_flee.wav")
     @font = Gosu::Font.new(self, "Arial", 18)
     @floor = Floor.new({:width => BOARD_WIDTH, :height => BOARD_HEIGHT}) # call toby's mapmaker
-    @floor.generate_map
+    @floor.rogue_style
     @scaler = 16 #scales the size of the image tiles to account for image size
     @countdown = 0 #is used in #update to control player speed
     @player = Entity.create(name: 'Dirge', in_battle?: false, str: 15, level: 1, xp: 0, health: 100,  location_x: 1, location_y: 1, pc?: true, image_path: 'media/fox.png', alive?: true, entity_drawn?: false)
     @entity_image = Gosu::Image.new(self, "#{@player.image_path}", false)
-    @monster = Battle.random_monster  #should be in a method called on encounter
-    @battle = Battle.new(name: 'Battle!', boss?: false, active?: true)  #should be in a method called on encounter
     @step_counter = 0
     @in_battle = 'no'
   end
@@ -132,7 +130,6 @@ class WorldWindow < Gosu::Window
       end
       if (button_down? Gosu::KbB) then #lets player exit a battle, new if statement should exit when flee, monster health 0, etc.
          @in_battle = 'no'
-         @monster = Battle.random_monster
       end
       # if !(@battle.active?) then
       #   @player.name = "QUITTER"
@@ -150,6 +147,8 @@ class WorldWindow < Gosu::Window
         if @random_encounter_one == @random_encounter_two
           @in_battle = 'yes'
           @step_counter = 0
+          @monster = Battle.random_monster  #should be in a method called on encounter
+          @battle = Battle.new(name: 'Battle!', boss?: false, active?: true)  #should be in a method called on encounter
         end
         unless @floor.is_solid?((@player.location_x - 1), @player.location_y)
           if @countdown == 0
@@ -167,6 +166,8 @@ class WorldWindow < Gosu::Window
         if @random_encounter_one == @random_encounter_two
           @in_battle = 'yes'
           @step_counter = 0
+          @monster = Battle.random_monster  #should be in a method called on encounter
+          @battle = Battle.new(name: 'Battle!', boss?: false, active?: true)  #should be in a method called on encounter
         end
         unless @floor.is_solid?((@player.location_x + 1), @player.location_y)
           if @countdown == 0
@@ -184,6 +185,8 @@ class WorldWindow < Gosu::Window
         if @random_encounter_one == @random_encounter_two
           @in_battle = 'yes'
           @step_counter = 0
+          @monster = Battle.random_monster  #should be in a method called on encounter
+          @battle = Battle.new(name: 'Battle!', boss?: false, active?: true)  #should be in a method called on encounter
         end
         unless @floor.is_solid?(@player.location_x, @player.location_y - 1)
           if @countdown == 0
@@ -201,6 +204,8 @@ class WorldWindow < Gosu::Window
         if @random_encounter_one == @random_encounter_two
           @in_battle = 'yes'
           @step_counter = 0
+          @monster = Battle.random_monster  #should be in a method called on encounter
+          @battle = Battle.new(name: 'Battle!', boss?: false, active?: true)  #should be in a method called on encounter
         end
         unless @floor.is_solid?(@player.location_x, @player.location_y + 1)
           if @countdown == 0

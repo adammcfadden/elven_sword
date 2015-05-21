@@ -96,7 +96,7 @@ class Floor
   end
 
   def rogue_style
-    number_of_rooms = 30
+    number_of_rooms = 50
     fill_map(true)
 
     number_of_rooms.times() do
@@ -105,8 +105,8 @@ class Floor
 
       while(invalid_room)
 
-        room_width = rand((@width/15).floor()..(@width/10).floor())
-        room_height = rand((@height/15).floor()..(@height/10).floor())
+        room_width = rand((@width/20).floor()..(@width/5).floor())
+        room_height = rand((@height/20).floor()..(@height/5).floor())
         p_topright = pick_random_point()
         invalid_room = false
         if(!is_within_map?(p_topright[:x] + room_width, p_topright[:y] + room_height))
