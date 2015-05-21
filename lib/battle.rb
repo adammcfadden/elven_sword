@@ -40,7 +40,7 @@ class Battle < ActiveRecord::Base
     self.entities.push(@entity1)
   end
 
-  def attack(attacker, target)    
+  def attack(attacker, target)
     target.take_damage(attacker.damage)
   end
 
