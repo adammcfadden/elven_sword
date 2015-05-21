@@ -37,7 +37,7 @@ class WorldWindow < Gosu::Window
     entrance_and_exit = @floor.get_entrance_and_exit
     @entrance = entrance_and_exit.fetch(:enter)
     @exit = entrance_and_exit.fetch(:exit)
-    @player = Entity.create(name: 'Dirge', vit: 10, in_battle?: false, str: 15, level: 1, xp: 0, health: 125,  location_x: @entrance.fetch(:x), location_y: @entrance.fetch(:y), pc?: true, image_path: 'media/player_tile.png', alive?: true, entity_drawn?: false)
+    @player = Entity.create(name: 'Dirge', vit: 10, in_battle?: false, str: 150, level: 1, xp: 0, health: 125,  location_x: @entrance.fetch(:x), location_y: @entrance.fetch(:y), pc?: true, image_path: 'media/player_tile.png', alive?: true, entity_drawn?: false)
     @weapon = Weapon.generate_random('dagger')
     @player.weapons.push(@weapon)
     @player_equipped_weapon = @player.weapons.first
@@ -123,7 +123,7 @@ class WorldWindow < Gosu::Window
 
     elsif @screen == 'level_up'
       draw_quad(1, 1, 0xff_000000, WIDTH, 1, 0xff_000000, WIDTH, HEIGHT, 0xff_000000, 1, HEIGHT, 0xff_000000, 0)
-      @font.draw("LEVEL UP!!", 700, HEIGHT/2, 2, scale_x = 2, scale_y = 2, color = 0xff_ffffff)
+      @font.draw("LEVEL UP!!", 700, HEIGHT/2 - 100, 2, scale_x = 2, scale_y = 2, color = 0xff_ffffff)
       @font.draw("Name: #{@player.name}", 700, HEIGHT/2 + 40, 2, scale_x = 1, scale_y = 1, color = 0xff_ffffff)
       @font.draw("Level: #{@player.level}", 700, HEIGHT/2 + 60, 2, scale_x = 1, scale_y = 1, color = 0xff_ffffff)
       @font.draw("Health: #{@player.health}/#{@player.get_max_health}", 700, HEIGHT/2 + 80, 2, scale_x = 1, scale_y = 1, color = 0xff_ffffff)
@@ -206,6 +206,8 @@ class WorldWindow < Gosu::Window
 
     elsif @screen == 'victory'
       if (button_down? Gosu::KbR) then #lets player exit a battle, new if statement should exit when flee, monster health 0, etc.
+        @player_damage = -1
+        @monster_damage = -1
         @screen = 'world'
       end
       if @monster.weapons.first
