@@ -246,6 +246,9 @@ class WorldWindow < Gosu::Window
             @step_counter = 0
             @player.enter_battle
             @monster = Battle.random_monster  #should be in a method called on encounter
+            while @monster.level > @player.level + 2 || @monster.level < @player.level - 2
+              @monster = Battle.random_monster  #should be in a method called on encounter
+            end
             @monster_image = Gosu::Image.new(self, "#{@monster.image_path}", false)
             @battle = Battle.new(name: 'Battle!', boss?: false, active?: true)  #should be in a method called on encounter
             @screen = 'battle'
@@ -267,6 +270,9 @@ class WorldWindow < Gosu::Window
             @step_counter = 0
             @player.enter_battle
             @monster = Battle.random_monster  #should be in a method called on encounter
+            while @monster.level > @player.level + 2 || @monster.level < @player.level - 2
+              @monster = Battle.random_monster  #should be in a method called on encounter
+            end
             @monster_image = Gosu::Image.new(self, "#{@monster.image_path}", false)
             @battle = Battle.new(name: 'Battle!', boss?: false, active?: true)  #should be in a method called on encounter
             @screen = 'battle'
@@ -288,6 +294,9 @@ class WorldWindow < Gosu::Window
             @step_counter = 0
             @player.enter_battle
             @monster = Battle.random_monster  #should be in a method called on encounter
+            while @monster.level > @player.level + 2 || @monster.level < @player.level - 2
+              @monster = Battle.random_monster  #should be in a method called on encounter
+            end
             @monster_image = Gosu::Image.new(self, "#{@monster.image_path}", false)
             @battle = Battle.new(name: 'Battle!', boss?: false, active?: true)  #should be in a method called on encounter
             @screen = 'battle'
@@ -309,6 +318,9 @@ class WorldWindow < Gosu::Window
             @step_counter = 0
             @player.enter_battle
             @monster = Battle.random_monster  #should be in a method called on encounter
+            while @monster.level > @player.level + 2 || @monster.level < @player.level - 2
+              @monster = Battle.random_monster  #should be in a method called on encounter
+            end
             @monster_image = Gosu::Image.new(self, "#{@monster.image_path}", false)
             @battle = Battle.new(name: 'Battle!', boss?: false, active?: true)  #should be in a method called on encounter
             @screen = 'battle'
