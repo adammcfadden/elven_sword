@@ -70,11 +70,11 @@ class Weapon < ActiveRecord::Base
     elsif category == 'artifact'
       roll = rand(3)
       if roll == 0
-        weapon = Weapon.create(name: 'Demon Claw', category: 'artifact', max_power: 30, min_power: 20)
+        weapon = Weapon.create(name: 'Necronomicon', category: 'artifact', max_power: 60, min_power: 0)
       elsif roll == 1
-        weapon = Weapon.create(name: 'Beholder Eye', category: 'artifact', max_power: 45, min_power: 0)
+        weapon = Weapon.create(name: 'Heart of Tarrasque', category: 'artifact', max_power: 45, min_power: 25)
       else
-        weapon = Weapon.create(name: 'Deep One Heart', category: 'artifact', max_power: 25, min_power: 25)
+        weapon = Weapon.create(name: 'Elven Sword', category: 'artifact', max_power: 90, min_power: 30)
       end
     end
   end
