@@ -20,7 +20,7 @@ class WorldWindow < Gosu::Window
 ### constants that will not change###
     super(BOARD_WIDTH*16, BOARD_HEIGHT*16, false) #map size
     self.caption = "Elven Sword!" #window title
-    @exit_image = Gosu::Image.new(self, "./media/two.png", false) # exit tile 1
+    @exit_image = Gosu::Image.new(self, "./media/stairs_tile.png", false) # exit tile 1
     @floor_image = Gosu::Image.new(self, "./media/grass_tile.png", false) # image tile 1
     @wall_image = Gosu::Image.new(self, "./media/stump_tile.png", false) # image tile 2
     @player_image = Gosu::Image.new(self, "./media/player.png", false) # image tile 1
@@ -66,21 +66,23 @@ class WorldWindow < Gosu::Window
       @font.draw("Name: #{@player.name}", 650, 60, 2, scale_x = 1, scale_y = 1, color = 0xff_ffffff)
       @font.draw("Level: #{@player.level}", 650, 80, 2, scale_x = 1, scale_y = 1, color = 0xff_ffffff)
       @font.draw("Health: #{@player.health}/#{@player.get_max_health}", 650, 100, 2, scale_x = 1, scale_y = 1, color = 0xff_ffffff)
-      @font.draw("Xp: #{@player.xp}/#{@player.level * 100}", 650, 120, 2, scale_x = 1, scale_y = 1, color = 0xff_ffffff)
+      @font.draw("Strength: #{@player.str}", 650, 120, 2, scale_x = 1, scale_y = 1, color = 0xff_ffffff)
+      @font.draw("Xp: #{@player.xp}/#{@player.level * 100}", 650, 140, 2, scale_x = 1, scale_y = 1, color = 0xff_ffffff)
       if @player.weapons.first #player weapon
-        @font.draw("Weapon: #{@player_equipped_weapon.name}", 650, 140, 2, scale_x = 1, scale_y = 1, color = 0xff_ffffff)
+        @font.draw("Weapon: #{@player_equipped_weapon.name}", 650, 160, 2, scale_x = 1, scale_y = 1, color = 0xff_ffffff)
       else
-        @font.draw("Weapon: None", 650, 140, 2, scale_x = 1, scale_y = 1, color = 0xff_ffffff)
+        @font.draw("Weapon: None", 650, 160, 2, scale_x = 1, scale_y = 1, color = 0xff_ffffff)
       end
 ### monster info box ###
       @font.draw("Name: #{@monster.name}", 1015, 900, 2, scale_x = 1, scale_y = 1, color = 0xff_ffffff)
-      @font.draw("Health: #{@monster.health}/#{@monster.get_max_health}", 1015, 920, 2, scale_x = 1, scale_y = 1, color = 0xff_ffffff)
-      @font.draw("Level: #{@monster.level}", 1015, 940, 2, scale_x = 1, scale_y = 1, color = 0xff_ffffff)
-      @font.draw("Xp: #{@monster.xp}", 1015, 960, 2, scale_x = 1, scale_y = 1, color = 0xff_ffffff)
+      @font.draw("Level: #{@monster.level}", 1015, 920, 2, scale_x = 1, scale_y = 1, color = 0xff_ffffff)
+      @font.draw("Health: #{@monster.health}/#{@monster.get_max_health}", 1015, 940, 2, scale_x = 1, scale_y = 1, color = 0xff_ffffff)
+      @font.draw("Strength: #{@monster.str}", 1015, 960, 2, scale_x = 1, scale_y = 1, color = 0xff_ffffff)
+      @font.draw("Xp Given: #{@monster.level * 25}", 1015, 980, 2, scale_x = 1, scale_y = 1, color = 0xff_ffffff)
       if @monster.weapons.first #monster weapon
-        @font.draw("Weapon: #{@monster.weapons.last.name}", 1015, 980, 2, scale_x = 1, scale_y = 1, color = 0xff_ffffff)
+        @font.draw("Weapon: #{@monster.weapons.last.name}", 1015, 1000, 2, scale_x = 1, scale_y = 1, color = 0xff_ffffff)
       else
-        @font.draw("Weapon: None", 1015, 980, 2, scale_x = 1, scale_y = 1, color = 0xff_ffffff)
+        @font.draw("Weapon: None", 1015, 1000, 2, scale_x = 1, scale_y = 1, color = 0xff_ffffff)
       end
 ### notifications ###
       if @countdown/60 > 0
@@ -98,36 +100,54 @@ class WorldWindow < Gosu::Window
 ##### VICTORY #####
 
     elsif @screen == 'victory'
-      #victory screen player health. equipable loot, weapon stats. your weapon stats.
-      @font.draw("PLayer Health: #{@player.health}", 450, 100, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
+      draw_quad(1, 1, 0xff_000000, WIDTH, 1, 0xff_000000, WIDTH, HEIGHT, 0xff_000000, 1, HEIGHT, 0xff_000000, 0)
+      @player_image.draw(20, 20, 1, scale_x = 1, scale_y = 1)
+      @font.draw("Loot the body", 900, HEIGHT/2 - 100, 2, scale_x = 2, scale_y = 2, color = 0xff_ffffff)
+      @font.draw("Equipping a Weapon will replace your current weapon", 900, HEIGHT/2 - 50, 2, scale_x = 0.8, scale_y = 0.8, color = 0xff_ffffff)
       if @monster.weapons.first #monster weapon
-        @font.draw("(E)quip", 450, 600, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
-        @font.draw("Monster Weapon: #{@monster.weapons.first.name}", 450, 300, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
-        @font.draw("Category: #{@monster.weapons.first.category}", 450, 400, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
-        @font.draw("Damage: #{@monster.weapons.first.min_power} - #{@monster.weapons.first.max_power}", 450, 500, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
+        @font.draw("Monster Weapon: #{@monster.weapons.first.name}", 900, HEIGHT/2, 2, scale_x = 1, scale_y = 1, color = 0xff_ffffff)
+        @font.draw("Category: #{@monster.weapons.first.category}", 900, HEIGHT/2 + 40, 2, scale_x = 1, scale_y = 1, color = 0xff_ffffff)
+        @font.draw("Name: #{@monster.weapons.first.name}", 900, HEIGHT/2 + 60, 2, scale_x = 1, scale_y = 1, color = 0xff_ffffff)
+        @font.draw("Damage: #{@monster.weapons.first.min_power} - #{@monster.weapons.first.max_power} dmg", 900, HEIGHT/2 + 80, 2, scale_x = 1, scale_y = 1, color = 0xff_ffffff)
+        @font.draw("E - Equip", 900, HEIGHT/2 + 100, 2, scale_x = 2, scale_y = 2, color = 0xff_ffffff)
+      else
+        @font.draw("No Loot Available", 900, HEIGHT/2, 2, scale_x = 2, scale_y = 2, color = 0xff_ffffff)
       end
-      draw_quad(1, 1, 0xff_808080, WIDTH, 1, 0xff_808080, WIDTH, HEIGHT, 0xff_808080, 1, HEIGHT, 0xff_808080, 0)
-      @font.draw("(R)eturn to World", 450, 700, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
+      @font.draw("Current Weapon: #{@player_equipped_weapon.name}", 200, HEIGHT/2, 2, scale_x = 1, scale_y = 1, color = 0xff_ffffff)
+      @font.draw("Category: #{@player_equipped_weapon.category}", 200, HEIGHT/2 + 40, 2, scale_x = 1, scale_y = 1, color = 0xff_ffffff)
+      @font.draw("Name: #{@player_equipped_weapon.name}", 200, HEIGHT/2 + 60, 2, scale_x = 1, scale_y = 1, color = 0xff_ffffff)
+      @font.draw("Damage: #{@player_equipped_weapon.min_power} - #{@player_equipped_weapon.max_power} dmg", 200, HEIGHT/2 + 80, 2, scale_x = 1, scale_y = 1, color = 0xff_ffffff)
+      @font.draw("R - Return to World", 600, HEIGHT/2 + 300, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
 
 ##### LEVEL_UP #####
 
     elsif @screen == 'level_up'
-      @font.draw("PLayer Health: #{@player.health}", 450, 100, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
-      @font.draw("PLayer Strength: #{@player.str}", 450, 200, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
+      draw_quad(1, 1, 0xff_000000, WIDTH, 1, 0xff_000000, WIDTH, HEIGHT, 0xff_000000, 1, HEIGHT, 0xff_000000, 0)
+      @font.draw("LEVEL UP!!", 700, HEIGHT/2, 2, scale_x = 2, scale_y = 2, color = 0xff_ffffff)
+      @font.draw("Name: #{@player.name}", 700, HEIGHT/2 + 40, 2, scale_x = 1, scale_y = 1, color = 0xff_ffffff)
+      @font.draw("Level: #{@player.level}", 700, HEIGHT/2 + 60, 2, scale_x = 1, scale_y = 1, color = 0xff_ffffff)
+      @font.draw("Health: #{@player.health}/#{@player.get_max_health}", 700, HEIGHT/2 + 80, 2, scale_x = 1, scale_y = 1, color = 0xff_ffffff)
+      @font.draw("Strength: #{@player.str}", 700, HEIGHT/2 + 100, 2, scale_x = 1, scale_y = 1, color = 0xff_ffffff)
+      @font.draw("Xp: #{@player.xp}/#{@player.level * 100}", 700, HEIGHT/2 + 120, 2, scale_x = 1, scale_y = 1, color = 0xff_ffffff)
+      @font.draw("L - Loot the body", 700, HEIGHT/2 + 180, 2, scale_x = 2, scale_y = 2, color = 0xff_ffffff)
 
-##### WORLD #####
+##### GAME_OVER #####
+
     elsif @screen == 'game_over'
-      draw_quad(1, 1, 0xff_808080, WIDTH, 1, 0xff_808080, WIDTH, HEIGHT, 0xff_808080, 1, HEIGHT, 0xff_808080, 0)
+      draw_quad(1, 1, 0xff_000000, WIDTH, 1, 0xff_000000, WIDTH, HEIGHT, 0xff_000000, 1, HEIGHT, 0xff_000000, 0)
       @font.draw("GAME OVER...", 700, HEIGHT/2, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
     else
+
+##### WORLD #####
 ###HUD###
-      draw_quad(0, 0, 0x90_000000, 200, 0, 0x90_000000, 0, 90, 0x90_000000, 200, 90, 0x90_000000, 1)
+      draw_quad(0, 0, 0x90_000000, 400, 0, 0x90_000000, 0, 100, 0x90_000000, 400, 100, 0x90_000000, 1)
       @font.draw("Player Level: #{@player.level}", 10, 10, 2, scale_x = 0.80, scale_y = 0.80, color = 0xff_ffffff)
       @font.draw("Health: #{@player.health}", 10, 25, 2, scale_x = 0.80, scale_y = 0.80, color = 0xff_ffffff)
+      @font.draw("Xp: #{@player.xp}/#{@player.level * 100}", 10, 40, 2, scale_x = 0.80, scale_y = 0.80, color = 0xff_ffffff)
       if @player_equipped_weapon
-        @font.draw("Weapon: #{@player_equipped_weapon.name} - #{@player_equipped_weapon.min_power}-#{@player_equipped_weapon.max_power}", 10, 40, 2, scale_x = 0.80, scale_y = 0.80, color = 0xff_ffffff)
+        @font.draw("Weapon: #{@player_equipped_weapon.name} - #{@player_equipped_weapon.min_power}-#{@player_equipped_weapon.max_power} dmg", 10, 55, 2, scale_x = 0.80, scale_y = 0.80, color = 0xff_ffffff)
       end
-      @font.draw("Level: #{@level_counter}", 10, 70, 2, scale_x = 0.85, scale_y = 0.85, color = 0xff_ffffff)
+      @font.draw("Level: #{@level_counter}", 10, 80, 2, scale_x = 0.85, scale_y = 0.85, color = 0xff_ffffff)
 ###draws map
       @floor.map.each_index do |x|
         @floor.map[x].each_index do |y|
@@ -209,7 +229,7 @@ class WorldWindow < Gosu::Window
       if @player.xp != 0
         @player.level_up(6)
       end
-      if (button_down? Gosu::KbT) then #
+      if (button_down? Gosu::KbL) then #
         @screen = 'victory'
       end
 
