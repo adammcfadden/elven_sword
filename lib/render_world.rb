@@ -32,17 +32,19 @@ class WorldWindow < Gosu::Window
     @scaler = 16 #scales the size of the image tiles to account for image size
     @countdown = 0 #is used in #update to control player speed
     @player = Entity.create(name: 'Dirge', vit: 10, in_battle?: false, str: 100, level: 1, xp: 0, health: 125,  location_x: 1, location_y: 1, pc?: true, image_path: 'media/fox.png', alive?: true, entity_drawn?: false)
-    @weapon = Weapon.generate_random('sword')
+    @weapon = Weapon.generate_random('dagger')
     @player.weapons.push(@weapon)
     @player_equipped_weapon = @player.weapons.first
     @entity_image = Gosu::Image.new(self, "#{@player.image_path}", false)
     @step_counter = 0
-    @screen = 'world'
     @player_damage = -1
     @monster_damage = -1
   end
 
   def draw
+
+##### BATTLE #####
+
     if @screen == 'battle'
       draw_quad(1, 1, 0xffffffff, WIDTH, 1, 0xffffffff, WIDTH, HEIGHT, 0xffff0000, 1, HEIGHT, 0xffff0000, 0)
       @player_image.draw(150, 150, 1, scale_x = 0.75, scale_y = 0.75)
@@ -128,7 +130,6 @@ class WorldWindow < Gosu::Window
         @font.draw("Weapon: #{@player_equipped_weapon.name} - #{@player_equipped_weapon.min_power}-#{@player_equipped_weapon.max_power}", 10, 40, 2, scale_x = 0.90, scale_y = 0.90, color = 0xff_ffffff)
       end
       #@font.draw("Encounter Chance: #{}", 450, 100, 2, scale_x = 0.75, scale_y = 0.75, color = 0xff_ffffff)
-
       #draws map
       @floor.map.each_index do |x|
         @floor.map[x].each_index do |y|
@@ -151,6 +152,9 @@ class WorldWindow < Gosu::Window
     end
 
   def update
+
+##### BATTLE #####
+
     if @screen == 'battle'
       if @countdown > 0 then
         @countdown -= 1
@@ -187,10 +191,9 @@ class WorldWindow < Gosu::Window
       if @player.alive? == false
         @screen = 'game_over' #game over screen.
       end
-      # if !(@battle.active?) then
-      #   @player.name = "QUITTER"
-      #   @monster.name = "PROXY WINNER"
-      # end
+
+##### VICTORY #####
+
     elsif @screen == 'victory'
       if (button_down? Gosu::KbR) then #lets player exit a battle, new if statement should exit when flee, monster health 0, etc.
         @screen = 'world'
@@ -209,10 +212,16 @@ class WorldWindow < Gosu::Window
           end
         end
       end
+
+##### LEVEL_UP #####
+
     elsif @screen == 'level_up'
       if @player.xp != 0
         @player.level_up(6)
       end
+
+##### VICTORY #####
+
       if (button_down? Gosu::KbT) then #
         @screen = 'victory'
       end
