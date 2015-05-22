@@ -23,7 +23,7 @@ class WorldWindow < Gosu::Window
     self.caption = "Elven Sword!" #window title
     @floor_image = Gosu::Image.new(self, "./media/grass_tile.png", false) # image tile 1
     @floor_two_image = Gosu::Image.new(self, "./media/dirt_tile.png", false) # image tile 2
-    @wall_image = Gosu::Image.new(self, "./media/tree_two.png", false) # image tile 2
+    @wall_image = Gosu::Image.new(self, "./media/pine_tree_tile.png", false) # image tile 2
     @wall_two_image = Gosu::Image.new(self, "./media/ocean.png", false)
     @exit_image = Gosu::Image.new(self, "./media/stairs_tile.png", false) # exit tile 1
     @player_image = Gosu::Image.new(self, "./media/player.png", false) # image tile 1
