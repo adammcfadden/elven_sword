@@ -13,7 +13,7 @@ BOARD_HEIGHT = 67
 TICKS_PER_STEP = 5
 DELAY = 30
 ENCOUNTER = 150 #lower for more encounters, higher for less
-BOSS_LEVEL = 3
+BOSS_LEVEL = 10
 
 class WorldWindow < Gosu::Window
   def initialize
@@ -31,7 +31,7 @@ class WorldWindow < Gosu::Window
     @level_counter = 1
     @heal_counter = 0
     # @tile_selector = 3 #testing only
-    @tile_selector = Random.new.rand(0..6)
+    @tile_selector = rand(7)
 ### tile selector ###
     if @tile_selector == 0 #forest
       @floor_image = Gosu::Image.new(self, "./media/grass_tile.png", false) # image tile 1
@@ -49,25 +49,25 @@ class WorldWindow < Gosu::Window
       @wall_image = Gosu::Image.new(self, "./media/cactus_tile.png", false) # image tile 2
       @wall_two_image = Gosu::Image.new(self, "./media/rock_tile.png", false)
     elsif @tile_selector == 3 #lava dungeon
-        @floor_image = Gosu::Image.new(self, "./media/dark_stone_tile.png", false) # image tile 1
-        @floor_two_image = Gosu::Image.new(self, "./media/dark_stone_tile.png", false) # image tile 2
-        @wall_image = Gosu::Image.new(self, "./media/gray_rock.png", false) # image tile 2
-        @wall_two_image = Gosu::Image.new(self, "./media/lava_tile.png", false)
+      @floor_image = Gosu::Image.new(self, "./media/dark_stone_tile.png", false) # image tile 1
+      @floor_two_image = Gosu::Image.new(self, "./media/dark_stone_tile.png", false) # image tile 2
+      @wall_image = Gosu::Image.new(self, "./media/gray_rock.png", false) # image tile 2
+      @wall_two_image = Gosu::Image.new(self, "./media/lava_tile.png", false)
     elsif @tile_selector == 4 #red rocks
-        @floor_image = Gosu::Image.new(self, "./media/red_dirt_tile.png", false) # image tile 1
-        @floor_two_image = Gosu::Image.new(self, "./media/red_dirt_tile.png", false) # image tile 2
-        @wall_image = Gosu::Image.new(self, "./media/rock_tile.png", false) # image tile 2
-        @wall_two_image = Gosu::Image.new(self, "./media/dead_tree_tile.png", false)
+      @floor_image = Gosu::Image.new(self, "./media/red_dirt_tile.png", false) # image tile 1
+      @floor_two_image = Gosu::Image.new(self, "./media/red_dirt_tile.png", false) # image tile 2
+      @wall_image = Gosu::Image.new(self, "./media/rock_tile.png", false) # image tile 2
+      @wall_two_image = Gosu::Image.new(self, "./media/dead_tree_tile.png", false)
     elsif @tile_selector == 5 #island
-        @floor_image = Gosu::Image.new(self, "./media/white_sand.png-large", false) # image tile 1
-        @floor_two_image = Gosu::Image.new(self, "./media/white_sand.png-large", false) # image tile 2
-        @wall_image = Gosu::Image.new(self, "./media/ocean.png", false) # image tile 2
-        @wall_two_image = Gosu::Image.new(self, "./media/palm_tree.png", false)
+      @floor_image = Gosu::Image.new(self, "./media/white_sand.png-large", false) # image tile 1
+      @floor_two_image = Gosu::Image.new(self, "./media/white_sand.png-large", false) # image tile 2
+      @wall_image = Gosu::Image.new(self, "./media/ocean.png", false) # image tile 2
+      @wall_two_image = Gosu::Image.new(self, "./media/palm_tree.png", false)
     elsif @tile_selector == 6 #ice
-        @floor_image = Gosu::Image.new(self, "./media/snow_tile.png", false) # image tile 1
-        @floor_two_image = Gosu::Image.new(self, "./media/snow_tile.png", false) # image tile 2
-        @wall_image = Gosu::Image.new(self, "./media/pine_tree_tile.png", false) # image tile 2
-        @wall_two_image = Gosu::Image.new(self, "./media/ice_tile.png", false)
+      @floor_image = Gosu::Image.new(self, "./media/snow_tile.png", false) # image tile 1
+      @floor_two_image = Gosu::Image.new(self, "./media/snow_tile.png", false) # image tile 2
+      @wall_image = Gosu::Image.new(self, "./media/pine_tree_tile.png", false) # image tile 2
+      @wall_two_image = Gosu::Image.new(self, "./media/ice_tile.png", false)
     end
 
 ###world/player generation###
@@ -348,12 +348,9 @@ class WorldWindow < Gosu::Window
       if @player.location_y == @exit.fetch(:y) && @player.location_x == @exit.fetch(:x)
         @level_counter += 1
         @heal_counter = 0
-        switch = 1
-        if switch = 1
-          @tile_selector = Random.new.rand(0..1)
-        end
-        switch = 0
+        @tile_selector = rand(7)
         @floor = Floor.new({:width => BOARD_WIDTH, :height => BOARD_HEIGHT}) # call toby's mapmaker
+        @wall_two = Floor.new({:width => BOARD_WIDTH, :height => BOARD_HEIGHT}) # call toby's mapmaker
         if @level_counter == BOSS_LEVEL - 1
           @floor_image = Gosu::Image.new(self, "./media/grass_tile.png", false) # image tile 1
           @floor_two_image = Gosu::Image.new(self, "./media/dirt_tile.png", false) # image tile 2
@@ -381,11 +378,56 @@ class WorldWindow < Gosu::Window
           @screen = 'battle'
         else
           @floor.generate_map
+          @wall_two.fill_map(true)
+          steps = Random.new.rand(500..10000)
+          @wall_two.drunk_walk(steps, false)
+          @wall_two.cellular_automata_no_random(4)
+          @entrance_and_exit = @floor.get_entrance_and_exit
+          @entrance = @entrance_and_exit.fetch(:enter)
+          @exit = @entrance_and_exit.fetch(:exit)
         end
         entrance_and_exit = @floor.get_entrance_and_exit
         @entrance = entrance_and_exit.fetch(:enter)
         @exit = entrance_and_exit.fetch(:exit)
         @player.update(location_x: @entrance.fetch(:x), location_y: @entrance.fetch(:y))
+#####TILE SELECTOR####
+        if @tile_selector == 0 #forest
+          @floor_image = Gosu::Image.new(self, "./media/grass_tile.png", false) # image tile 1
+          @floor_two_image = Gosu::Image.new(self, "./media/grass_tile.png", false) # image tile 2
+          @wall_image = Gosu::Image.new(self, "./media/tall_tree_tile.png", false) # image tile 2
+          @wall_two_image = Gosu::Image.new(self, "./media/ocean.png", false)
+        elsif @tile_selector == 1 #swamp
+          @floor_image = Gosu::Image.new(self, "./media/dirt_tile.png", false) # image tile 1
+          @floor_two_image = Gosu::Image.new(self, "./media/dirt_tile.png", false) # image tile 2
+          @wall_image = Gosu::Image.new(self, "./media/shrub_tile.png", false) # image tile 2
+          @wall_two_image = Gosu::Image.new(self, "./media/ocean.png", false)
+        elsif @tile_selector == 2 #desert
+          @floor_image = Gosu::Image.new(self, "./media/desert_tile.png", false) # image tile 1
+          @floor_two_image = Gosu::Image.new(self, "./media/desert_tile.png", false) # image tile 2
+          @wall_image = Gosu::Image.new(self, "./media/cactus_tile.png", false) # image tile 2
+          @wall_two_image = Gosu::Image.new(self, "./media/rock_tile.png", false)
+        elsif @tile_selector == 3 #lava dungeon
+          @floor_image = Gosu::Image.new(self, "./media/dark_stone_tile.png", false) # image tile 1
+          @floor_two_image = Gosu::Image.new(self, "./media/dark_stone_tile.png", false) # image tile 2
+          @wall_image = Gosu::Image.new(self, "./media/gray_rock.png", false) # image tile 2
+          @wall_two_image = Gosu::Image.new(self, "./media/lava_tile.png", false)
+        elsif @tile_selector == 4 #red rocks
+          @floor_image = Gosu::Image.new(self, "./media/red_dirt_tile.png", false) # image tile 1
+          @floor_two_image = Gosu::Image.new(self, "./media/red_dirt_tile.png", false) # image tile 2
+          @wall_image = Gosu::Image.new(self, "./media/rock_tile.png", false) # image tile 2
+          @wall_two_image = Gosu::Image.new(self, "./media/dead_tree_tile.png", false)
+        elsif @tile_selector == 5 #island
+          @floor_image = Gosu::Image.new(self, "./media/white_sand.png-large", false) # image tile 1
+          @floor_two_image = Gosu::Image.new(self, "./media/white_sand.png-large", false) # image tile 2
+          @wall_image = Gosu::Image.new(self, "./media/ocean.png", false) # image tile 2
+          @wall_two_image = Gosu::Image.new(self, "./media/palm_tree.png", false)
+        elsif @tile_selector == 6 #ice
+          @floor_image = Gosu::Image.new(self, "./media/snow_tile.png", false) # image tile 1
+          @floor_two_image = Gosu::Image.new(self, "./media/snow_tile.png", false) # image tile 2
+          @wall_image = Gosu::Image.new(self, "./media/pine_tree_tile.png", false) # image tile 2
+          @wall_two_image = Gosu::Image.new(self, "./media/ice_tile.png", false)
+        end
+#####
       end
       if button_down? Gosu::KbLeft or button_down? Gosu::GpLeft then
         if @countdown == 0
