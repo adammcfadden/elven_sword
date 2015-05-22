@@ -184,7 +184,6 @@ class WorldWindow < Gosu::Window
       @font.draw("R - Rest", WIDTH-390, 10, 5, scale_x = 0.80, scale_y = 0.80, color = 0xff_ffffff)
       @font.draw("  Heals player", WIDTH-390, 25, 5, scale_x = 0.80, scale_y = 0.80, color = 0xff_ffffff)
       @font.draw("  Increases chance of monster attack", WIDTH-390, 40, 5, scale_x = 0.80, scale_y = 0.80, color = 0xff_ffffff)
-
 ### draws map ###
       @wall_two.map.each_index do |x|
         @wall_two.map[x].each_index do |y|
@@ -218,7 +217,7 @@ class WorldWindow < Gosu::Window
       if @countdown > 0 then
         @countdown -= 1
       end
-      if (button_down? Gosu::KbA) && @player.in_battle? && @monster.alive? && @player.alive? then
+      if (button_down? Gosu::KbA or button_down? Gosu::GpButton0) && @player.in_battle? && @monster.alive? && @player.alive? then
         if @countdown == 0
            @countdown = DELAY
            #@monster_attack_sound.play
@@ -226,7 +225,7 @@ class WorldWindow < Gosu::Window
            @player_damage = @battle.attack(@monster, @player)
         end
       end
-      if (button_down? Gosu::KbF) && @battle.active? then
+      if (button_down? Gosu::KbF or button_down? Gosu::GpButton2) && @battle.active? && @battle.active? then
          #@player_flee_sound.play
          @countdown = DELAY
          @player.flee
@@ -252,16 +251,16 @@ class WorldWindow < Gosu::Window
 ##### VICTORY #####
 
     elsif @screen == 'victory'
-      if (button_down? Gosu::KbR) then #lets player exit a battle, new if statement should exit when flee, monster health 0, etc.
+      if (button_down? Gosu::KbR or button_down? Gosu::GpButton0) then #lets player exit a battle, new if statement should exit when flee, monster health 0, etc.
         @player_damage = -1
         @monster_damage = -1
         @screen = 'world'
       end
-      if (button_down? Gosu::KbW) && @monster.alive? == false && @battle.boss?
+      if (button_down? Gosu::KbW or button_down? Gosu::GpButton2) && @monster.alive? == false && @battle.boss?
         @screen = 'win_game'
       end
       if @monster.weapons.first
-        if (button_down? Gosu::KbE) then #let player equip monsters weapon
+        if (button_down? Gosu::KbE or button_down? Gosu::GpButton0) then #let player equip monsters weapon
           @player.weapons.each do |weapon|
             weapon.unequip
           end
@@ -279,7 +278,7 @@ class WorldWindow < Gosu::Window
 ##### START #####
 
     elsif @screen == 'start'
-      if (button_down? Gosu::KbS) then #
+      if (button_down? Gosu::KbS) or (button_down? Gosu::GpButton0) then #
         @screen = 'world'
       end
 
@@ -289,7 +288,7 @@ class WorldWindow < Gosu::Window
       if @player.xp != 0
         @player.level_up(6)
       end
-      if (button_down? Gosu::KbS) then #
+      if (button_down? Gosu::KbS) or (button_down? Gosu::GpButton0) then #
         @screen = 'victory'
       end
 
@@ -320,7 +319,7 @@ class WorldWindow < Gosu::Window
       if @countdown > 0 then
          @countdown -= 1
       end
-      if button_down? Gosu::KbLeft then
+      if button_down? Gosu::KbLeft or button_down? Gosu::GpLeft then
         if @countdown == 0
           @random_encounter_one = Random.new.rand(@step_counter..ENCOUNTER)
           @random_encounter_two = Random.new.rand(@step_counter..ENCOUNTER)
@@ -344,7 +343,7 @@ class WorldWindow < Gosu::Window
           end
         end
       end
-      if button_down? Gosu::KbRight then
+      if button_down? Gosu::KbRight or button_down? Gosu::GpRight then
         if @countdown == 0
           @random_encounter_one = Random.new.rand(@step_counter..ENCOUNTER)
           @random_encounter_two = Random.new.rand(@step_counter..ENCOUNTER)
@@ -368,7 +367,7 @@ class WorldWindow < Gosu::Window
           end
         end
       end
-      if button_down? Gosu::KbUp then
+      if button_down? Gosu::KbUp or button_down? Gosu::GpUp then
         if @countdown == 0
           @random_encounter_one = Random.new.rand(@step_counter..ENCOUNTER)
           @random_encounter_two = Random.new.rand(@step_counter..ENCOUNTER)
@@ -392,7 +391,7 @@ class WorldWindow < Gosu::Window
           end
         end
       end
-      if button_down? Gosu::KbDown then
+      if button_down? Gosu::KbDown or button_down? Gosu::GpDown then
         if @countdown == 0
           @random_encounter_one = Random.new.rand(@step_counter..ENCOUNTER)
           @random_encounter_two = Random.new.rand(@step_counter..ENCOUNTER)
@@ -416,7 +415,7 @@ class WorldWindow < Gosu::Window
           end
         end
       end
-      if button_down? Gosu::KbR then
+      if button_down? Gosu::KbR or button_down? Gosu::GpButton0 then
         if @countdown == 0
           if @player.health < @player.get_max_health
           @player.update(health: @player.health + ((@player.get_max_health - @player.health)/2))
