@@ -58,8 +58,8 @@ class WorldWindow < Gosu::Window
     @heart_x = 1
     @heart_y = 1
 
-    @player = Entity.create(name: 'Dirge', vit: 10, in_battle?: false, str: 15, level: 1, xp: 0, health: 125,  location_x: @entrance.fetch(:x), location_y: @entrance.fetch(:y), pc?: true, image_path: 'media/player_tile.png', alive?: true, entity_drawn?: false)
-    @weapon = Weapon.generate_random('dagger')
+    @player = Entity.create(name: 'Dirge', in_battle?: false, vit:8, str: 8, level: 1, xp: 0, health: 170,  location_x: @entrance.fetch(:x), location_y: @entrance.fetch(:y), pc?: true, image_path: 'media/player_tile.png', alive?: true, entity_drawn?: false)
+    @weapon = Weapon.generate_random('trinket')
     @player.weapons.push(@weapon)
     @player_equipped_weapon = @player.weapons.first
     @entity_image = Gosu::Image.new(self, "#{@player.image_path}", false)
@@ -307,7 +307,7 @@ class WorldWindow < Gosu::Window
 
     elsif @screen == 'level_up'
       if @player.xp != 0
-        @player.level_up(6)
+        @player.level_up(((@player.level * @player.level)/3)+10)
       end
       if (button_down? Gosu::KbS) or (button_down? Gosu::GpButton0) then #
         @screen = 'victory'
