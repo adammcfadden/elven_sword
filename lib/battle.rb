@@ -141,9 +141,27 @@ class Battle < ActiveRecord::Base
       monster.weapons.push(weapon)
       weapon.equip
     end
+    return monster
+  end
 
+  def self.random_boss
+    name = 'Neo-Alucard'
+    level = 12
+    vit = 40
+    str = 40
+    image_path = './media/boss.png'
+    weapon_category = 'artifact'
 
+    monster = Entity.create(str: str, vit: vit, name: name, level: level, pc?: false, alive?: true, image_path: image_path)
+    monster.level_up(rand(6))
+    max_health = monster.get_max_health
+    monster.update(health: max_health)
 
+    if(weapon_category != nil)
+      weapon = Weapon.generate_random(weapon_category)
+      monster.weapons.push(weapon)
+      weapon.equip
+    end
     return monster
   end
 

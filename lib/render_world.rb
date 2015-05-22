@@ -13,7 +13,7 @@ BOARD_HEIGHT = 67
 TICKS_PER_STEP = 5
 DELAY = 30
 ENCOUNTER = 150 #lower for more encounters, higher for less
-BOSS_LEVEL = 10
+BOSS_LEVEL = 1
 
 class WorldWindow < Gosu::Window
   def initialize
@@ -37,7 +37,7 @@ class WorldWindow < Gosu::Window
     entrance_and_exit = @floor.get_entrance_and_exit
     @entrance = entrance_and_exit.fetch(:enter)
     @exit = entrance_and_exit.fetch(:exit)
-    @player = Entity.create(name: 'Dirge', vit: 15, in_battle?: false, str: 15, level: 1, xp: 0, health: 175,  location_x: @entrance.fetch(:x), location_y: @entrance.fetch(:y), pc?: true, image_path: 'media/player_tile.png', alive?: true, entity_drawn?: false)
+    @player = Entity.create(name: 'Dirge', vit: 15, in_battle?: false, str: 500, level: 1, xp: 0, health: 5000,  location_x: @entrance.fetch(:x), location_y: @entrance.fetch(:y), pc?: true, image_path: 'media/player_tile.png', alive?: true, entity_drawn?: false)
     @weapon = Weapon.generate_random('dagger')
     @player.weapons.push(@weapon)
     @player_equipped_weapon = @player.weapons.first
@@ -119,6 +119,9 @@ class WorldWindow < Gosu::Window
       @font.draw("Name: #{@player_equipped_weapon.name}", 200, HEIGHT/2 + 60, 2, scale_x = 1, scale_y = 1, color = 0xff_ffffff)
       @font.draw("Damage: #{@player_equipped_weapon.min_power} - #{@player_equipped_weapon.max_power} dmg", 200, HEIGHT/2 + 80, 2, scale_x = 1, scale_y = 1, color = 0xff_ffffff)
       @font.draw("R - Return to World", 600, HEIGHT/2 + 300, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
+      if @monster.alive? == false && @battle.boss?
+        @font.draw("W - You Win! Exit Game.", 600, HEIGHT/2 + 400, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
+      end
 
 ##### LEVEL_UP #####
 
@@ -131,7 +134,7 @@ class WorldWindow < Gosu::Window
       @font.draw("Health: #{@player.health}/#{@player.get_max_health}", 700, HEIGHT/2 + 80, 2, scale_x = 1, scale_y = 1, color = 0xff_ffffff)
       @font.draw("Strength: #{@player.str}", 700, HEIGHT/2 + 100, 2, scale_x = 1, scale_y = 1, color = 0xff_ffffff)
       @font.draw("Xp: #{@player.xp}/#{@player.level * 100}", 700, HEIGHT/2 + 120, 2, scale_x = 1, scale_y = 1, color = 0xff_ffffff)
-      @font.draw("L - Loot the body", 700, HEIGHT/2 + 180, 2, scale_x = 2, scale_y = 2, color = 0xff_ffffff)
+      @font.draw("S - Search the body", 700, HEIGHT/2 + 180, 2, scale_x = 2, scale_y = 2, color = 0xff_ffffff)
 
 ##### START #####
 
@@ -146,7 +149,15 @@ class WorldWindow < Gosu::Window
     elsif @screen == 'game_over'
       draw_quad(1, 1, 0xff_000000, WIDTH, 1, 0xff_000000, WIDTH, HEIGHT, 0xff_000000, 1, HEIGHT, 0xff_000000, 0)
       @font.draw("GAME OVER...", 700, HEIGHT/2, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
+
+
+##### WIN_GAME #####
+
+    elsif @screen == 'win_game'
+      draw_quad(1, 1, 0xff_000000, WIDTH, 1, 0xff_000000, WIDTH, HEIGHT, 0xff_000000, 1, HEIGHT, 0xff_000000, 0)
+      @font.draw("YOU WIN...", 700, HEIGHT/2, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
     else
+
 
 ##### WORLD #####
 ###HUD###
@@ -212,6 +223,8 @@ class WorldWindow < Gosu::Window
         @screen = 'game_over' #game over screen.
       end
 
+
+
 ##### VICTORY #####
 
     elsif @screen == 'victory'
@@ -219,6 +232,9 @@ class WorldWindow < Gosu::Window
         @player_damage = -1
         @monster_damage = -1
         @screen = 'world'
+      end
+      if (button_down? Gosu::KbW) && @monster.alive? == false && @battle.boss?
+        @screen = 'win_game'
       end
       if @monster.weapons.first
         if (button_down? Gosu::KbE) then #let player equip monsters weapon
@@ -249,7 +265,7 @@ class WorldWindow < Gosu::Window
       if @player.xp != 0
         @player.level_up(6)
       end
-      if (button_down? Gosu::KbL) then #
+      if (button_down? Gosu::KbS) then #
         @screen = 'victory'
       end
 
@@ -266,7 +282,7 @@ class WorldWindow < Gosu::Window
         elsif @level_counter > BOSS_LEVEL
           @monster = Battle.random_boss
           @monster_image = Gosu::Image.new(self, "#{@monster.image_path}", false)
-          @battle = Battle.new(name: 'Battle!', boss?: false, active?: true)
+          @battle = Battle.new(name: 'Battle!', boss?: true, active?: true)
           @player.enter_battle
           @screen = 'battle'
         else
