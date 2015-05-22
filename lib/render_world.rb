@@ -58,7 +58,7 @@ class WorldWindow < Gosu::Window
     @heart_x = 1
     @heart_y = 1
 
-    @player = Entity.create(name: 'Dirge', in_battle?: false, vit:8, str: 8, level: 1, xp: 0, health: 170,  location_x: @entrance.fetch(:x), location_y: @entrance.fetch(:y), pc?: true, image_path: 'media/player_tile.png', alive?: true, entity_drawn?: false)
+    @player = Entity.create(name: 'Dirge', in_battle?: false, vit:8, str: 8, level: 1, xp: 0, health: 150,  location_x: @entrance.fetch(:x), location_y: @entrance.fetch(:y), pc?: true, image_path: 'media/player_tile.png', alive?: true, entity_drawn?: false)
     @weapon = Weapon.generate_random('trinket')
     @player.weapons.push(@weapon)
     @player_equipped_weapon = @player.weapons.first
@@ -105,9 +105,6 @@ class WorldWindow < Gosu::Window
         @font.draw("Weapon: None", 1015, 1000, 2, scale_x = 1, scale_y = 1, color = 0xff_ffffff)
       end
 ### notifications ###
-      if @countdown/60 > 0
-        @font.draw("Chill #{@countdown/60} second(s)", 600, 950, 2, scale_x = 3, scale_y = 3, color = 0xff_ffffff)
-      end
       if @player_damage >= 0
         @font.draw("#{@monster.name} dealt: #{@player_damage} damage", WIDTH/2 - 140, HEIGHT/2 + 55, 2, scale_x = 1, scale_y = 1, color = 0xff_ffffff)
       end
@@ -117,7 +114,7 @@ class WorldWindow < Gosu::Window
       @font.draw("A - Attack!", 20, 600, 2, scale_x = 1.5, scale_y = 1.5, color = 0xff_ffffff)
       @font.draw("F - Flee!", 20, 650, 2, scale_x = 1.5, scale_y = 1.5, color = 0xff_ffffff)
       if @battle.boss? && (button_down? Gosu::KbF or button_down? Gosu::GpButton2)
-        draw_line(10, 675, 0xff_ff0000, 200, 675, 0xff_ff0000, z = 3, mode = :default)
+        draw_line(10, 665, 0xff_ff0000, 200, 675, 0xff_ff0000, z = 3, mode = :default)
         @font.draw("You cannot run from #{@monster.name}", 20, 700, 2, scale_x = 1.5, scale_y = 1.5, color = 0xff_ffffff)
       end
 
@@ -248,6 +245,8 @@ class WorldWindow < Gosu::Window
         if (button_down? Gosu::KbF or button_down? Gosu::GpButton2) && @battle.active? && @battle.active? then
            #@player_flee_sound.play
            @countdown = DELAY
+           @player_damage = -1
+           @monster_damage = -1
            @player.flee
         end
       end
