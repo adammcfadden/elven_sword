@@ -186,11 +186,6 @@ class WorldWindow < Gosu::Window
         @font.draw("Weapon: #{@player_equipped_weapon.name} - #{@player_equipped_weapon.min_power}-#{@player_equipped_weapon.max_power} dmg", 10, 55, 5, scale_x = 0.80, scale_y = 0.80, color = 0xff_ffffff)
       end
       @font.draw("Level: #{@level_counter}", 10, 80, 5, scale_x = 0.85, scale_y = 0.85, color = 0xff_ffffff)
-### Key Commands ###
-      draw_quad(WIDTH-400, 0, 0x90_000000, WIDTH, 0, 0x90_000000, WIDTH-400, 100, 0x90_000000, WIDTH, 100, 0x90_000000, 4)
-      @font.draw("R - Rest", WIDTH-390, 10, 5, scale_x = 0.80, scale_y = 0.80, color = 0xff_ffffff)
-      @font.draw("  Heals player", WIDTH-390, 25, 5, scale_x = 0.80, scale_y = 0.80, color = 0xff_ffffff)
-      @font.draw("  Increases chance of monster attack", WIDTH-390, 40, 5, scale_x = 0.80, scale_y = 0.80, color = 0xff_ffffff)
 ### draws map ###
       @wall_two.map.each_index do |x|
         @wall_two.map[x].each_index do |y|
@@ -447,15 +442,6 @@ class WorldWindow < Gosu::Window
             @countdown = TICKS_PER_STEP
             @player.move_south
             @step_counter += 1
-          end
-        end
-      end
-      if button_down? Gosu::KbR or button_down? Gosu::GpButton0 then
-        if @countdown == 0
-          if @player.health < @player.get_max_health
-          @player.update(health: @player.health + ((@player.get_max_health - @player.health)/2))
-          @countdown += 60
-          @step_counter += (ENCOUNTER - @step_counter)/3
           end
         end
       end
