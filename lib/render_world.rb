@@ -13,7 +13,7 @@ BOARD_HEIGHT = 67
 TICKS_PER_STEP = 5
 DELAY = 30
 ENCOUNTER = 150 #lower for more encounters, higher for less
-BOSS_LEVEL = 2
+BOSS_LEVEL = 3
 REST_WAIT = 60
 
 class WorldWindow < Gosu::Window
@@ -43,8 +43,9 @@ class WorldWindow < Gosu::Window
     @floor.generate_map
     @wall_two = Floor.new({:width => BOARD_WIDTH, :height => BOARD_HEIGHT}) # call toby's mapmaker
     @wall_two.fill_map(true)
-    steps = 2000
+    steps = Random.new.rand(500..10000)
     @wall_two.drunk_walk(steps, false)
+    @wall_two.cellular_automata_no_random(4)
     entrance_and_exit = @floor.get_entrance_and_exit
     @entrance = entrance_and_exit.fetch(:enter)
     @exit = entrance_and_exit.fetch(:exit)
@@ -302,7 +303,20 @@ class WorldWindow < Gosu::Window
       if @player.location_y == @exit.fetch(:y) && @player.location_x == @exit.fetch(:x)
         @floor = Floor.new({:width => BOARD_WIDTH, :height => BOARD_HEIGHT}) # call toby's mapmaker
         @level_counter += 1
-        if @level_counter == BOSS_LEVEL
+        if @level_counter == BOSS_LEVEL - 1
+          @floor_image = Gosu::Image.new(self, "./media/grass_tile.png", false) # image tile 1
+          @floor_two_image = Gosu::Image.new(self, "./media/dirt_tile.png", false) # image tile 2
+          @wall_image = Gosu::Image.new(self, "./media/pine_tree_tile.png", false) # image tile 2
+          @wall_two_image = Gosu::Image.new(self, "./media/ocean.png", false)
+          @exit_image = Gosu::Image.new(self, "./media/town_tile.png", false)
+          @floor = Floor.new({:width => BOARD_WIDTH, :height => BOARD_HEIGHT}) # call toby's mapmaker
+          @floor.generate_map
+          @wall_two = Floor.new({:width => BOARD_WIDTH, :height => BOARD_HEIGHT}) # call toby's mapmaker
+          @wall_two.fill_map(true)
+          steps = Random.new.rand(500..10000)
+          @wall_two.drunk_walk(steps, false)
+          @wall_two.cellular_automata_no_random(4)
+        elsif @level_counter == BOSS_LEVEL
           @floor.rogue_style
           @wall_two_image = Gosu::Image.new(self, "./media/castle_wall_tile.png", false)
           @floor_image = Gosu::Image.new(self, "./media/castle_floor_tile.png", false) # image tile 1
