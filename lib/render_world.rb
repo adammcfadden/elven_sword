@@ -31,7 +31,7 @@ class WorldWindow < Gosu::Window
     @level_counter = 1
     @heal_counter = 0
     # @tile_selector = 3 #testing only
-    @tile_selector = Random.new.rand(0..1)
+    @tile_selector = Random.new.rand(0..6)
 ### tile selector ###
     if @tile_selector == 0 #forest
       @floor_image = Gosu::Image.new(self, "./media/grass_tile.png", false) # image tile 1
