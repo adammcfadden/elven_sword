@@ -14,7 +14,6 @@ TICKS_PER_STEP = 5
 DELAY = 30
 ENCOUNTER = 150 #lower for more encounters, higher for less
 BOSS_LEVEL = 3
-REST_WAIT = 60
 
 class WorldWindow < Gosu::Window
   def initialize
@@ -34,9 +33,9 @@ class WorldWindow < Gosu::Window
     @scaler = 16 #scales the size of the image tiles to account for image size
     @countdown = 0 #is used in #update to control player speed
     @level_counter = 1
+    @heal_counter = 0
 ### tile selector ###
     # if number == 0
-
 
 ###world/player generation###
     @floor = Floor.new({:width => BOARD_WIDTH, :height => BOARD_HEIGHT}) # call toby's mapmaker
@@ -46,9 +45,13 @@ class WorldWindow < Gosu::Window
     steps = Random.new.rand(500..10000)
     @wall_two.drunk_walk(steps, false)
     @wall_two.cellular_automata_no_random(4)
-    entrance_and_exit = @floor.get_entrance_and_exit
-    @entrance = entrance_and_exit.fetch(:enter)
-    @exit = entrance_and_exit.fetch(:exit)
+    @entrance_and_exit = @floor.get_entrance_and_exit
+    @entrance = @entrance_and_exit.fetch(:enter)
+    @exit = @entrance_and_exit.fetch(:exit)
+    @heart_image = Gosu::Image.new(self, "./media/heart.gif", false)
+    @heart_x = 1
+    @heart_y = 1
+
     @player = Entity.create(name: 'Dirge', vit: 10, in_battle?: false, str: 15, level: 1, xp: 0, health: 125,  location_x: @entrance.fetch(:x), location_y: @entrance.fetch(:y), pc?: true, image_path: 'media/player_tile.png', alive?: true, entity_drawn?: false)
     @weapon = Weapon.generate_random('dagger')
     @player.weapons.push(@weapon)
@@ -183,11 +186,6 @@ class WorldWindow < Gosu::Window
         @font.draw("Weapon: #{@player_equipped_weapon.name} - #{@player_equipped_weapon.min_power}-#{@player_equipped_weapon.max_power} dmg", 10, 55, 5, scale_x = 0.80, scale_y = 0.80, color = 0xff_ffffff)
       end
       @font.draw("Level: #{@level_counter}", 10, 80, 5, scale_x = 0.85, scale_y = 0.85, color = 0xff_ffffff)
-### Key Commands ###
-      draw_quad(WIDTH-400, 0, 0x90_000000, WIDTH, 0, 0x90_000000, WIDTH-400, 100, 0x90_000000, WIDTH, 100, 0x90_000000, 4)
-      @font.draw("R - Rest", WIDTH-390, 10, 5, scale_x = 0.80, scale_y = 0.80, color = 0xff_ffffff)
-      @font.draw("  Heals player", WIDTH-390, 25, 5, scale_x = 0.80, scale_y = 0.80, color = 0xff_ffffff)
-      @font.draw("  Increases chance of monster attack", WIDTH-390, 40, 5, scale_x = 0.80, scale_y = 0.80, color = 0xff_ffffff)
 ### draws map ###
       @wall_two.map.each_index do |x|
         @wall_two.map[x].each_index do |y|
@@ -210,9 +208,20 @@ class WorldWindow < Gosu::Window
       @entity_image.draw(@player.location_x*16, @player.location_y*16, 4)
 ### draws exit image ###
       @exit_image.draw(@exit.fetch(:x)*@scaler, @exit.fetch(:y)*@scaler, 4)
+### draws hearts ###
+      until @floor.is_solid?(@heart_x, @heart_y) == false
+        @heart = @floor.pick_random_point
+        @heart_x = @heart.fetch(:x)
+        @heart_y = @heart.fetch(:y)
+      end
+      if @heal_counter == 0
+        @heart_image.draw(@heart_x*@scaler, @heart_y*@scaler, 4)
+      end
     end
 
-
+##############################
+      #UPDATE#
+##############################
   def update
 
 ##### BATTLE #####
@@ -300,9 +309,13 @@ class WorldWindow < Gosu::Window
 
 ##### WORLD #####
     else
+      if @countdown > 0 then
+         @countdown -= 1
+      end
       if @player.location_y == @exit.fetch(:y) && @player.location_x == @exit.fetch(:x)
         @floor = Floor.new({:width => BOARD_WIDTH, :height => BOARD_HEIGHT}) # call toby's mapmaker
         @level_counter += 1
+        @heal_counter = 0
         if @level_counter == BOSS_LEVEL - 1
           @floor_image = Gosu::Image.new(self, "./media/grass_tile.png", false) # image tile 1
           @floor_two_image = Gosu::Image.new(self, "./media/dirt_tile.png", false) # image tile 2
@@ -335,9 +348,6 @@ class WorldWindow < Gosu::Window
         @entrance = entrance_and_exit.fetch(:enter)
         @exit = entrance_and_exit.fetch(:exit)
         @player.update(location_x: @entrance.fetch(:x), location_y: @entrance.fetch(:y))
-      end
-      if @countdown > 0 then
-         @countdown -= 1
       end
       if button_down? Gosu::KbLeft or button_down? Gosu::GpLeft then
         if @countdown == 0
@@ -435,13 +445,11 @@ class WorldWindow < Gosu::Window
           end
         end
       end
-      if button_down? Gosu::KbR or button_down? Gosu::GpButton0 then
-        if @countdown == 0
-          if @player.health < @player.get_max_health
-          @player.update(health: @player.health + ((@player.get_max_health - @player.health)/2))
-          @countdown = REST_WAIT
-          @step_counter += (ENCOUNTER - @step_counter)/3
-          end
+      if [@player.location_x, @player.location_y] == [@heart_x, @heart_y] && @heal_counter == 0
+        if @player.health < @player.get_max_health
+          @player.update(health: @player.get_max_health)
+          @countdown += 30
+          @heal_counter += 1
         end
       end
     end
