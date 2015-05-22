@@ -13,7 +13,7 @@ BOARD_HEIGHT = 67
 TICKS_PER_STEP = 5
 DELAY = 30
 ENCOUNTER = 150 #lower for more encounters, higher for less
-BOSS_LEVEL = 10
+BOSS_LEVEL = 2
 REST_WAIT = 60
 
 class WorldWindow < Gosu::Window
@@ -21,9 +21,11 @@ class WorldWindow < Gosu::Window
 ### constants that will not change###
     super(BOARD_WIDTH*16, BOARD_HEIGHT*16, false) #map size
     self.caption = "Elven Sword!" #window title
-    @exit_image = Gosu::Image.new(self, "./media/stairs_tile.png", false) # exit tile 1
     @floor_image = Gosu::Image.new(self, "./media/grass_tile.png", false) # image tile 1
-    @wall_image = Gosu::Image.new(self, "./media/stump_tile.png", false) # image tile 2
+    @floor_two_image = Gosu::Image.new(self, "./media/dirt_tile.png", false) # image tile 2
+    @wall_image = Gosu::Image.new(self, "./media/tree_two.png", false) # image tile 2
+    @wall_two_image = Gosu::Image.new(self, "./media/ocean.png", false)
+    @exit_image = Gosu::Image.new(self, "./media/stairs_tile.png", false) # exit tile 1
     @player_image = Gosu::Image.new(self, "./media/player.png", false) # image tile 1
     @player_attack_sound = Gosu::Sample.new(self, "media/fox_taunt.wav")
     @monster_attack_sound = Gosu::Sample.new(self, "media/godzilla_roars.wav")
@@ -32,9 +34,17 @@ class WorldWindow < Gosu::Window
     @scaler = 16 #scales the size of the image tiles to account for image size
     @countdown = 0 #is used in #update to control player speed
     @level_counter = 1
+### tile selector ###
+    # if number == 0
+
+
 ###world/player generation###
     @floor = Floor.new({:width => BOARD_WIDTH, :height => BOARD_HEIGHT}) # call toby's mapmaker
     @floor.generate_map
+    @wall_two = Floor.new({:width => BOARD_WIDTH, :height => BOARD_HEIGHT}) # call toby's mapmaker
+    @wall_two.fill_map(true)
+    steps = 2000
+    @wall_two.drunk_walk(steps, false)
     entrance_and_exit = @floor.get_entrance_and_exit
     @entrance = entrance_and_exit.fetch(:enter)
     @exit = entrance_and_exit.fetch(:exit)
@@ -48,7 +58,6 @@ class WorldWindow < Gosu::Window
     @monster_damage = -1
     @screen = 'start'
   end
-
   def draw
 
 ##### BATTLE #####
@@ -162,34 +171,42 @@ class WorldWindow < Gosu::Window
 
 ##### WORLD #####
 ### Player info ###
-      draw_quad(0, 0, 0x90_000000, 400, 0, 0x90_000000, 0, 100, 0x90_000000, 400, 100, 0x90_000000, 1)
-      @font.draw("#{@player.name} Level: #{@player.level}", 10, 10, 2, scale_x = 0.80, scale_y = 0.80, color = 0xff_ffffff)
-      @font.draw("Health: #{@player.health}/#{@player.get_max_health}", 10, 25, 2, scale_x = 0.80, scale_y = 0.80, color = 0xff_ffffff)
-      @font.draw("Xp: #{@player.xp}/#{@player.level * 100}", 10, 40, 2, scale_x = 0.80, scale_y = 0.80, color = 0xff_ffffff)
+      draw_quad(0, 0, 0x90_000000, 400, 0, 0x90_000000, 0, 100, 0x90_000000, 400, 100, 0x90_000000, 4)
+      @font.draw("#{@player.name} Level: #{@player.level}", 10, 10, 5, scale_x = 0.80, scale_y = 0.80, color = 0xff_ffffff)
+      @font.draw("Health: #{@player.health}/#{@player.get_max_health}", 10, 25, 5, scale_x = 0.80, scale_y = 0.80, color = 0xff_ffffff)
+      @font.draw("Xp: #{@player.xp}/#{@player.level * 100}", 10, 40, 5, scale_x = 0.80, scale_y = 0.80, color = 0xff_ffffff)
       if @player_equipped_weapon
-        @font.draw("Weapon: #{@player_equipped_weapon.name} - #{@player_equipped_weapon.min_power}-#{@player_equipped_weapon.max_power} dmg", 10, 55, 2, scale_x = 0.80, scale_y = 0.80, color = 0xff_ffffff)
+        @font.draw("Weapon: #{@player_equipped_weapon.name} - #{@player_equipped_weapon.min_power}-#{@player_equipped_weapon.max_power} dmg", 10, 55, 5, scale_x = 0.80, scale_y = 0.80, color = 0xff_ffffff)
       end
-      @font.draw("Level: #{@level_counter}", 10, 80, 2, scale_x = 0.85, scale_y = 0.85, color = 0xff_ffffff)
+      @font.draw("Level: #{@level_counter}", 10, 80, 5, scale_x = 0.85, scale_y = 0.85, color = 0xff_ffffff)
 ### Key Commands ###
-      draw_quad(WIDTH-400, 0, 0x90_000000, WIDTH, 0, 0x90_000000, WIDTH-400, 100, 0x90_000000, WIDTH, 100, 0x90_000000, 1)
-      @font.draw("R - Rest", WIDTH-390, 10, 2, scale_x = 0.80, scale_y = 0.80, color = 0xff_ffffff)
-      @font.draw("  Heals player", WIDTH-390, 25, 2, scale_x = 0.80, scale_y = 0.80, color = 0xff_ffffff)
-      @font.draw("  Increases chance of monster attack", WIDTH-390, 40, 2, scale_x = 0.80, scale_y = 0.80, color = 0xff_ffffff)
+      draw_quad(WIDTH-400, 0, 0x90_000000, WIDTH, 0, 0x90_000000, WIDTH-400, 100, 0x90_000000, WIDTH, 100, 0x90_000000, 4)
+      @font.draw("R - Rest", WIDTH-390, 10, 5, scale_x = 0.80, scale_y = 0.80, color = 0xff_ffffff)
+      @font.draw("  Heals player", WIDTH-390, 25, 5, scale_x = 0.80, scale_y = 0.80, color = 0xff_ffffff)
+      @font.draw("  Increases chance of monster attack", WIDTH-390, 40, 5, scale_x = 0.80, scale_y = 0.80, color = 0xff_ffffff)
 
 ### draws map ###
+      @wall_two.map.each_index do |x|
+        @wall_two.map[x].each_index do |y|
+          unless(@wall_two.is_solid?(x, y))
+            @wall_two_image.draw(x*@scaler, y*@scaler, 2)
+          end
+        end
+      end
       @floor.map.each_index do |x|
         @floor.map[x].each_index do |y|
           if(@floor.is_solid?(x, y))
-            @wall_image.draw(x*@scaler, y*@scaler, 0)
+            @floor_two_image.draw(x*@scaler, y*@scaler, 0)
+            @wall_image.draw(x*@scaler, y*@scaler, 1)
           else
-            @floor_image.draw(x*@scaler, y*@scaler, 0)
+            @floor_image.draw(x*@scaler, y*@scaler, 3)
           end
         end
       end
 ### draws player at entrance ###
-      @entity_image.draw(@player.location_x*16, @player.location_y*16, 1)
+      @entity_image.draw(@player.location_x*16, @player.location_y*16, 4)
 ### draws exit image ###
-      @exit_image.draw(@exit.fetch(:x)*@scaler, @exit.fetch(:y)*@scaler, 1)
+      @exit_image.draw(@exit.fetch(:x)*@scaler, @exit.fetch(:y)*@scaler, 4)
     end
 
 
