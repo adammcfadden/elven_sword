@@ -20,23 +20,29 @@ class WorldWindow < Gosu::Window
 ### constants that will not change###
     super(BOARD_WIDTH*16, BOARD_HEIGHT*16, false) #map size
     self.caption = "Elven Sword!" #window title
-    @floor_image = Gosu::Image.new(self, "./media/grass_tile.png", false) # image tile 1
-    @floor_two_image = Gosu::Image.new(self, "./media/dirt_tile.png", false) # image tile 2
-    @wall_image = Gosu::Image.new(self, "./media/pine_tree_tile.png", false) # image tile 2
-    @wall_two_image = Gosu::Image.new(self, "./media/ocean.png", false)
     @exit_image = Gosu::Image.new(self, "./media/stairs_tile.png", false) # exit tile 1
     @player_image = Gosu::Image.new(self, "./media/player.png", false) # image tile 1
-    @player_attack_sound = Gosu::Sample.new(self, "media/fox_taunt.wav")
-    @monster_attack_sound = Gosu::Sample.new(self, "media/godzilla_roars.wav")
-    @player_flee_sound = Gosu::Sample.new(self, "media/fox_flee.wav")
+    # @player_attack_sound = Gosu::Sample.new(self, "media/fox_taunt.wav")
+    # @monster_attack_sound = Gosu::Sample.new(self, "media/godzilla_roars.wav")
+    # @player_flee_sound = Gosu::Sample.new(self, "media/fox_flee.wav")
     @font = Gosu::Font.new(self, Gosu::default_font_name, 24)
     @scaler = 16 #scales the size of the image tiles to account for image size
     @countdown = 0 #is used in #update to control player speed
     @level_counter = 1
     @heal_counter = 0
+    @tile_selector = Random.new.rand(0..1)
 ### tile selector ###
-    # if number == 0
-
+    if @tile_selector == 0
+      @floor_image = Gosu::Image.new(self, "./media/grass_tile.png", false) # image tile 1
+      @floor_two_image = Gosu::Image.new(self, "./media/dirt_tile.png", false) # image tile 2
+      @wall_image = Gosu::Image.new(self, "./media/pine_tree_tile.png", false) # image tile 2
+      @wall_two_image = Gosu::Image.new(self, "./media/ocean.png", false)
+    elsif @tile_selector == 1
+      @floor_image = Gosu::Image.new(self, "./media/dirt_tile.png", false) # image tile 1
+      @floor_two_image = Gosu::Image.new(self, "./media/dirt_tile.png", false) # image tile 2
+      @wall_image = Gosu::Image.new(self, "./media/shrub_tile.png", false) # image tile 2
+      @wall_two_image = Gosu::Image.new(self, "./media/ocean.png", false)
+    end
 ###world/player generation###
     @floor = Floor.new({:width => BOARD_WIDTH, :height => BOARD_HEIGHT}) # call toby's mapmaker
     @floor.generate_map
@@ -313,9 +319,14 @@ class WorldWindow < Gosu::Window
          @countdown -= 1
       end
       if @player.location_y == @exit.fetch(:y) && @player.location_x == @exit.fetch(:x)
-        @floor = Floor.new({:width => BOARD_WIDTH, :height => BOARD_HEIGHT}) # call toby's mapmaker
         @level_counter += 1
         @heal_counter = 0
+        switch = 1
+        if switch = 1
+          @tile_selector = Random.new.rand(0..1)
+        end
+        switch = 0
+        @floor = Floor.new({:width => BOARD_WIDTH, :height => BOARD_HEIGHT}) # call toby's mapmaker
         if @level_counter == BOSS_LEVEL - 1
           @floor_image = Gosu::Image.new(self, "./media/grass_tile.png", false) # image tile 1
           @floor_two_image = Gosu::Image.new(self, "./media/dirt_tile.png", false) # image tile 2
