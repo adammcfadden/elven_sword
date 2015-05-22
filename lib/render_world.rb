@@ -30,19 +30,46 @@ class WorldWindow < Gosu::Window
     @countdown = 0 #is used in #update to control player speed
     @level_counter = 1
     @heal_counter = 0
+    # @tile_selector = 3 #testing only
     @tile_selector = Random.new.rand(0..1)
 ### tile selector ###
-    if @tile_selector == 0
+    if @tile_selector == 0 #forest
       @floor_image = Gosu::Image.new(self, "./media/grass_tile.png", false) # image tile 1
-      @floor_two_image = Gosu::Image.new(self, "./media/dirt_tile.png", false) # image tile 2
-      @wall_image = Gosu::Image.new(self, "./media/pine_tree_tile.png", false) # image tile 2
+      @floor_two_image = Gosu::Image.new(self, "./media/grass_tile.png", false) # image tile 2
+      @wall_image = Gosu::Image.new(self, "./media/tall_tree_tile.png", false) # image tile 2
       @wall_two_image = Gosu::Image.new(self, "./media/ocean.png", false)
-    elsif @tile_selector == 1
+    elsif @tile_selector == 1 #swamp
       @floor_image = Gosu::Image.new(self, "./media/dirt_tile.png", false) # image tile 1
       @floor_two_image = Gosu::Image.new(self, "./media/dirt_tile.png", false) # image tile 2
       @wall_image = Gosu::Image.new(self, "./media/shrub_tile.png", false) # image tile 2
       @wall_two_image = Gosu::Image.new(self, "./media/ocean.png", false)
+    elsif @tile_selector == 2 #desert
+      @floor_image = Gosu::Image.new(self, "./media/desert_tile.png", false) # image tile 1
+      @floor_two_image = Gosu::Image.new(self, "./media/desert_tile.png", false) # image tile 2
+      @wall_image = Gosu::Image.new(self, "./media/cactus_tile.png", false) # image tile 2
+      @wall_two_image = Gosu::Image.new(self, "./media/rock_tile.png", false)
+    elsif @tile_selector == 3 #lava dungeon
+        @floor_image = Gosu::Image.new(self, "./media/dark_stone_tile.png", false) # image tile 1
+        @floor_two_image = Gosu::Image.new(self, "./media/dark_stone_tile.png", false) # image tile 2
+        @wall_image = Gosu::Image.new(self, "./media/gray_rock.png", false) # image tile 2
+        @wall_two_image = Gosu::Image.new(self, "./media/lava_tile.png", false)
+    elsif @tile_selector == 4 #red rocks
+        @floor_image = Gosu::Image.new(self, "./media/red_dirt_tile.png", false) # image tile 1
+        @floor_two_image = Gosu::Image.new(self, "./media/red_dirt_tile.png", false) # image tile 2
+        @wall_image = Gosu::Image.new(self, "./media/rock_tile.png", false) # image tile 2
+        @wall_two_image = Gosu::Image.new(self, "./media/dead_tree_tile.png", false)
+    elsif @tile_selector == 5 #island
+        @floor_image = Gosu::Image.new(self, "./media/white_sand.png-large", false) # image tile 1
+        @floor_two_image = Gosu::Image.new(self, "./media/white_sand.png-large", false) # image tile 2
+        @wall_image = Gosu::Image.new(self, "./media/ocean.png", false) # image tile 2
+        @wall_two_image = Gosu::Image.new(self, "./media/palm_tree.png", false)
+    elsif @tile_selector == 6 #ice
+        @floor_image = Gosu::Image.new(self, "./media/snow_tile.png", false) # image tile 1
+        @floor_two_image = Gosu::Image.new(self, "./media/snow_tile.png", false) # image tile 2
+        @wall_image = Gosu::Image.new(self, "./media/pine_tree_tile.png", false) # image tile 2
+        @wall_two_image = Gosu::Image.new(self, "./media/ice_tile.png", false)
     end
+
 ###world/player generation###
     @floor = Floor.new({:width => BOARD_WIDTH, :height => BOARD_HEIGHT}) # call toby's mapmaker
     @floor.generate_map
@@ -181,19 +208,20 @@ class WorldWindow < Gosu::Window
 
 ##### WORLD #####
 ### Player info ###
-      draw_quad(0, 0, 0x90_000000, 400, 0, 0x90_000000, 0, 100, 0x90_000000, 400, 100, 0x90_000000, 4)
-      @font.draw("#{@player.name} Level: #{@player.level}", 10, 10, 5, scale_x = 0.80, scale_y = 0.80, color = 0xff_ffffff)
-      @font.draw("Health: #{@player.health}/#{@player.get_max_health}", 10, 25, 5, scale_x = 0.80, scale_y = 0.80, color = 0xff_ffffff)
-      @font.draw("Xp: #{@player.xp}/#{@player.level * 100}", 10, 40, 5, scale_x = 0.80, scale_y = 0.80, color = 0xff_ffffff)
+      draw_quad(0, 0, 0x90_000000, 400, 0, 0x90_000000, 0, 100, 0x90_000000, 400, 100, 0x90_000000, 5)
+      @font.draw("#{@player.name} Level: #{@player.level}", 10, 10, 6, scale_x = 0.80, scale_y = 0.80, color = 0x90_ffffff)
+      @font.draw("Health: #{@player.health}/#{@player.get_max_health}", 10, 25, 6, scale_x = 0.80, scale_y = 0.80, color = 0x90_ffffff)
+      @font.draw("Xp: #{@player.xp}/#{@player.level * 100}", 10, 40, 6, scale_x = 0.80, scale_y = 0.80, color = 0x90_ffffff)
       if @player_equipped_weapon
-        @font.draw("Weapon: #{@player_equipped_weapon.name} - #{@player_equipped_weapon.min_power}-#{@player_equipped_weapon.max_power} dmg", 10, 55, 5, scale_x = 0.80, scale_y = 0.80, color = 0xff_ffffff)
+        @font.draw("Weapon: #{@player_equipped_weapon.name} - #{@player_equipped_weapon.min_power}-#{@player_equipped_weapon.max_power} dmg", 10, 55, 6, scale_x = 0.80, scale_y = 0.80, color = 0x90_ffffff)
       end
-      @font.draw("Level: #{@level_counter}", 10, 80, 5, scale_x = 0.85, scale_y = 0.85, color = 0xff_ffffff)
+      @font.draw("Level: #{@level_counter}", 10, 80, 6, scale_x = 0.85, scale_y = 0.85, color = 0x90_ffffff)
 ### draws map ###
       @wall_two.map.each_index do |x|
         @wall_two.map[x].each_index do |y|
           unless(@wall_two.is_solid?(x, y))
-            @wall_two_image.draw(x*@scaler, y*@scaler, 2)
+            @floor_two_image.draw(x*@scaler, y*@scaler, 2)
+            @wall_two_image.draw(x*@scaler, y*@scaler, 3)
           end
         end
       end
@@ -203,14 +231,14 @@ class WorldWindow < Gosu::Window
             @floor_two_image.draw(x*@scaler, y*@scaler, 0)
             @wall_image.draw(x*@scaler, y*@scaler, 1)
           else
-            @floor_image.draw(x*@scaler, y*@scaler, 3)
+            @floor_image.draw(x*@scaler, y*@scaler, 4)
           end
         end
       end
 ### draws player at entrance ###
-      @entity_image.draw(@player.location_x*16, @player.location_y*16, 4)
+      @entity_image.draw(@player.location_x*16, @player.location_y*16, 5)
 ### draws exit image ###
-      @exit_image.draw(@exit.fetch(:x)*@scaler, @exit.fetch(:y)*@scaler, 4)
+      @exit_image.draw(@exit.fetch(:x)*@scaler, @exit.fetch(:y)*@scaler, 5)
 ### draws hearts ###
       until @floor.is_solid?(@heart_x, @heart_y) == false
         @heart = @floor.pick_random_point
@@ -218,7 +246,7 @@ class WorldWindow < Gosu::Window
         @heart_y = @heart.fetch(:y)
       end
       if @heal_counter == 0
-        @heart_image.draw(@heart_x*@scaler, @heart_y*@scaler, 4)
+        @heart_image.draw(@heart_x*@scaler, @heart_y*@scaler, 5)
       end
     end
 
@@ -331,7 +359,7 @@ class WorldWindow < Gosu::Window
           @floor_two_image = Gosu::Image.new(self, "./media/dirt_tile.png", false) # image tile 2
           @wall_image = Gosu::Image.new(self, "./media/pine_tree_tile.png", false) # image tile 2
           @wall_two_image = Gosu::Image.new(self, "./media/ocean.png", false)
-          @exit_image = Gosu::Image.new(self, "./media/town_tile.png", false)
+          @exit_image = Gosu::Image.new(self, "./media/castle.png", false)
           @floor = Floor.new({:width => BOARD_WIDTH, :height => BOARD_HEIGHT}) # call toby's mapmaker
           @floor.generate_map
           @wall_two = Floor.new({:width => BOARD_WIDTH, :height => BOARD_HEIGHT}) # call toby's mapmaker
