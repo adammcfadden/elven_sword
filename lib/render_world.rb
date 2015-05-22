@@ -14,6 +14,7 @@ TICKS_PER_STEP = 5
 DELAY = 30
 ENCOUNTER = 150 #lower for more encounters, higher for less
 BOSS_LEVEL = 10
+REST_WAIT = 60
 
 class WorldWindow < Gosu::Window
   def initialize
@@ -27,7 +28,7 @@ class WorldWindow < Gosu::Window
     @player_attack_sound = Gosu::Sample.new(self, "media/fox_taunt.wav")
     @monster_attack_sound = Gosu::Sample.new(self, "media/godzilla_roars.wav")
     @player_flee_sound = Gosu::Sample.new(self, "media/fox_flee.wav")
-    @font = Gosu::Font.new(self, "Arial", 24)
+    @font = Gosu::Font.new(self, Gosu::default_font_name, 24)
     @scaler = 16 #scales the size of the image tiles to account for image size
     @countdown = 0 #is used in #update to control player speed
     @level_counter = 1
@@ -160,16 +161,22 @@ class WorldWindow < Gosu::Window
 
 
 ##### WORLD #####
-###HUD###
+### Player info ###
       draw_quad(0, 0, 0x90_000000, 400, 0, 0x90_000000, 0, 100, 0x90_000000, 400, 100, 0x90_000000, 1)
-      @font.draw("Player Level: #{@player.level}", 10, 10, 2, scale_x = 0.80, scale_y = 0.80, color = 0xff_ffffff)
-      @font.draw("Health: #{@player.health}", 10, 25, 2, scale_x = 0.80, scale_y = 0.80, color = 0xff_ffffff)
+      @font.draw("#{@player.name} Level: #{@player.level}", 10, 10, 2, scale_x = 0.80, scale_y = 0.80, color = 0xff_ffffff)
+      @font.draw("Health: #{@player.health}/#{@player.get_max_health}", 10, 25, 2, scale_x = 0.80, scale_y = 0.80, color = 0xff_ffffff)
       @font.draw("Xp: #{@player.xp}/#{@player.level * 100}", 10, 40, 2, scale_x = 0.80, scale_y = 0.80, color = 0xff_ffffff)
       if @player_equipped_weapon
         @font.draw("Weapon: #{@player_equipped_weapon.name} - #{@player_equipped_weapon.min_power}-#{@player_equipped_weapon.max_power} dmg", 10, 55, 2, scale_x = 0.80, scale_y = 0.80, color = 0xff_ffffff)
       end
       @font.draw("Level: #{@level_counter}", 10, 80, 2, scale_x = 0.85, scale_y = 0.85, color = 0xff_ffffff)
-###draws map
+### Key Commands ###
+      draw_quad(WIDTH-400, 0, 0x90_000000, WIDTH, 0, 0x90_000000, WIDTH-400, 100, 0x90_000000, WIDTH, 100, 0x90_000000, 1)
+      @font.draw("R - Rest", WIDTH-390, 10, 2, scale_x = 0.80, scale_y = 0.80, color = 0xff_ffffff)
+      @font.draw("  Heals player", WIDTH-390, 25, 2, scale_x = 0.80, scale_y = 0.80, color = 0xff_ffffff)
+      @font.draw("  Increases chance of monster attack", WIDTH-390, 40, 2, scale_x = 0.80, scale_y = 0.80, color = 0xff_ffffff)
+
+### draws map ###
       @floor.map.each_index do |x|
         @floor.map[x].each_index do |y|
           if(@floor.is_solid?(x, y))
@@ -179,9 +186,9 @@ class WorldWindow < Gosu::Window
           end
         end
       end
-###draws player at entrance
+### draws player at entrance ###
       @entity_image.draw(@player.location_x*16, @player.location_y*16, 1)
-###draws exit image
+### draws exit image ###
       @exit_image.draw(@exit.fetch(:x)*@scaler, @exit.fetch(:y)*@scaler, 1)
     end
 
@@ -392,9 +399,16 @@ class WorldWindow < Gosu::Window
           end
         end
       end
-    end
+      if button_down? Gosu::KbR then
+        if @countdown == 0
+          if @player.health < @player.get_max_health
+          @player.update(health: @player.health + ((@player.get_max_health - @player.health)/2))
+          @countdown = REST_WAIT
+          @step_counter += (ENCOUNTER - @step_counter)/3
+          end
+        end
+      end
     end
   end
-  window = WorldWindow.new
-  window.show
+end
 end
