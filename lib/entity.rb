@@ -21,7 +21,7 @@ class Entity < ActiveRecord::Base
       min = weapon.min_power
       weapon_bonus = Random.new.rand(min..max)
     end
-    self.str * weapon_bonus / 10
+    self.str * 1.5 + weapon_bonus
   end
 
   def move_north
