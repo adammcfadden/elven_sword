@@ -68,6 +68,11 @@ class WorldWindow < Gosu::Window
       @floor_two_image = Gosu::Image.new(self, "./media/snow_tile.png", false) # image tile 2
       @wall_image = Gosu::Image.new(self, "./media/pine_tree_tile.png", false) # image tile 2
       @wall_two_image = Gosu::Image.new(self, "./media/ice_tile.png", false)
+    elsif @tile_selector == 8 #boss
+      @wall_two_image = Gosu::Image.new(self, "./media/castle_wall_tile.png", false)
+      @floor_image = Gosu::Image.new(self, "./media/castle_floor_tile.png", false) # image tile 1
+      @wall_image = Gosu::Image.new(self, "./media/castle_wall_tile.png", false) # image tile 2
+      @wall_two_image = Gosu::Image.new(self, "./media/castle_wall_tile.png", false)
     end
 
 ###world/player generation###
@@ -299,7 +304,7 @@ class WorldWindow < Gosu::Window
 ##### VICTORY #####
 
     elsif @screen == 'victory'
-      if (button_down? Gosu::KbR or button_down? Gosu::GpButton0) then #lets player exit a battle, new if statement should exit when flee, monster health 0, etc.
+      if (button_down? Gosu::KbR or button_down? Gosu::GpButton3) then #lets player exit a battle, new if statement should exit when flee, monster health 0, etc.
         @player_damage = -1
         @monster_damage = -1
         @screen = 'world'
@@ -334,7 +339,7 @@ class WorldWindow < Gosu::Window
 
     elsif @screen == 'level_up'
       if @player.xp != 0
-        @player.level_up(((@player.level * @player.level)/3)+10)
+        @player.level_up((@player.level * @player.level)/3)
       end
       if (button_down? Gosu::KbS) or (button_down? Gosu::GpButton0) then #
         @screen = 'victory'
@@ -365,10 +370,8 @@ class WorldWindow < Gosu::Window
           @wall_two.drunk_walk(steps, false)
           @wall_two.cellular_automata_no_random(4)
         elsif @level_counter == BOSS_LEVEL
+          @tile_selector = 8
           @floor.rogue_style
-          @wall_two_image = Gosu::Image.new(self, "./media/castle_wall_tile.png", false)
-          @floor_image = Gosu::Image.new(self, "./media/castle_floor_tile.png", false) # image tile 1
-          @wall_image = Gosu::Image.new(self, "./media/castle_wall_tile.png", false) # image tile 2
           @exit_image = Gosu::Image.new(self, "./media/boss_tile.png", false) # exit tile 1
         elsif @level_counter > BOSS_LEVEL
           @monster = Battle.random_boss
@@ -426,8 +429,13 @@ class WorldWindow < Gosu::Window
           @floor_two_image = Gosu::Image.new(self, "./media/snow_tile.png", false) # image tile 2
           @wall_image = Gosu::Image.new(self, "./media/pine_tree_tile.png", false) # image tile 2
           @wall_two_image = Gosu::Image.new(self, "./media/ice_tile.png", false)
+        elsif @tile_selector == 8 #boss
+          @wall_two_image = Gosu::Image.new(self, "./media/castle_wall_tile.png", false)
+          @floor_image = Gosu::Image.new(self, "./media/castle_floor_tile.png", false) # image tile 1
+          @wall_image = Gosu::Image.new(self, "./media/castle_wall_tile.png", false) # image tile 2
+          @wall_two_image = Gosu::Image.new(self, "./media/castle_wall_tile.png", false)
         end
-#####
+#####^TILE SELECTOR^####
       end
       if button_down? Gosu::KbLeft or button_down? Gosu::GpLeft then
         if @countdown == 0
