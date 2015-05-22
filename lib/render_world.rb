@@ -13,7 +13,7 @@ BOARD_HEIGHT = 67
 TICKS_PER_STEP = 5
 DELAY = 30
 ENCOUNTER = 150 #lower for more encounters, higher for less
-BOSS_LEVEL = 1
+BOSS_LEVEL = 10
 
 class WorldWindow < Gosu::Window
   def initialize
@@ -37,7 +37,7 @@ class WorldWindow < Gosu::Window
     entrance_and_exit = @floor.get_entrance_and_exit
     @entrance = entrance_and_exit.fetch(:enter)
     @exit = entrance_and_exit.fetch(:exit)
-    @player = Entity.create(name: 'Dirge', vit: 15, in_battle?: false, str: 500, level: 1, xp: 0, health: 5000,  location_x: @entrance.fetch(:x), location_y: @entrance.fetch(:y), pc?: true, image_path: 'media/player_tile.png', alive?: true, entity_drawn?: false)
+    @player = Entity.create(name: 'Dirge', vit: 10, in_battle?: false, str: 15, level: 1, xp: 0, health: 125,  location_x: @entrance.fetch(:x), location_y: @entrance.fetch(:y), pc?: true, image_path: 'media/player_tile.png', alive?: true, entity_drawn?: false)
     @weapon = Weapon.generate_random('dagger')
     @player.weapons.push(@weapon)
     @player_equipped_weapon = @player.weapons.first
