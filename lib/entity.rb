@@ -12,16 +12,16 @@ class Entity < ActiveRecord::Base
   end
 
   def damage
-    weapon_bonus = 5
+    weapon_bonus = rand((self.level* 2) + 1)
 
     weapon = self.weapons.where(isequipped?: true).take
 
     if weapon != nil
       max = weapon.max_power
       min = weapon.min_power
-      weapon_bonus = Random.new.rand(min..max)
+      weapon_bonus = rand(min..max)
     end
-    self.str * 1.5 + weapon_bonus
+    (weapon_bonus*self.str/4) + (self.str * 2)
   end
 
   def move_north
@@ -82,7 +82,7 @@ class Entity < ActiveRecord::Base
   def get_max_health
     vit = self.vit
     level = self.level
-    max_health = vit * 10 + (level * 25)
+    max_health = vit * 15 + (level * 30)
     return max_health
   end
 

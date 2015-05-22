@@ -17,26 +17,26 @@ class Battle < ActiveRecord::Base
       name = 'Ghoul'
       level = 0
       vit = 4
-      str = 8
+      str = 3
       image_path = './media/ghoul.png'
     elsif monster_roll == 1
       name = 'Kobold'
       level = 0
-      vit = 6
+      vit = 2
       str = 2
       weapon_category = 'trinket'
       image_path = './media/kobold.png'
     elsif monster_roll == 2
       name = 'Lizard'
       level = 1
-      vit = 5
+      vit = 4
       str = 4
       image_path = './media/lizard.png'
     elsif monster_roll == 3
       name = 'Goblin'
-      level = 1
-      vit = 3
-      str = 6
+      level = 0
+      vit = 2
+      str = 4
       weapon_category = 'dagger'
       image_path = './media/goblin.png'
     elsif monster_roll == 4
@@ -81,7 +81,7 @@ class Battle < ActiveRecord::Base
       image_path = './media/gorgon.png'
     elsif monster_roll == 10
       name = 'Skull Cluster'
-      weapon_category = "arcane"
+      weapon_category = "nature"
       level = 5
       vit = 6
       str = 13
