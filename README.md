@@ -14,8 +14,8 @@ Elven Sword is still in development, and will be seeing frequent updates and add
 
 ##Setup
 *Gosu Setup*
-Linux - https://github.com/jlnr/gosu/wiki/Getting-Started-on-Linux
-OS X - https://github.com/jlnr/gosu/wiki/Getting-Started-on-OS-X
+- Linux - https://github.com/jlnr/gosu/wiki/Getting-Started-on-Linux
+- OS X - https://github.com/jlnr/gosu/wiki/Getting-Started-on-OS-X
 
 
 ```
