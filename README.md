@@ -30,7 +30,7 @@ ruby run.rb
 ```
 
 ##Screens
-![Start Screen](screens/opening_screen.png)
+![Start Screen](screens/opening_scaled.png)
 ![Forest Map](screens/forest_map.png)
 ![Desert Map](screens/desert_map.png)
 ![Snow Map](screens/snow_map.png)
