@@ -341,7 +341,7 @@ class WorldWindow < Gosu::Window
       if @player.xp != 0
         @player.level_up((@player.level * @player.level)/3)
       end
-      if (button_down? Gosu::KbS) or (button_down? Gosu::GpButton0) then #
+      if (button_down? Gosu::KbS) or (button_down? Gosu::GpButton1) then #
         @screen = 'victory'
       end
 
