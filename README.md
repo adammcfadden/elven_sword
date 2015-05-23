@@ -6,11 +6,11 @@ Elven Sword is still in development, and will be seeing frequent updates and add
 
 
 ##Requirements:
--Ruby
--Gosu
--Sinatra
--ActiveRecord
--PostgreSQL
+- Ruby
+- Gosu
+- Sinatra
+- ActiveRecord
+- PostgreSQL
 
 ##Setup
 *Gosu Setup*
